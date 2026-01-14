@@ -57,6 +57,7 @@
     align-items: flex-start;
     flex-wrap: wrap;
     box-sizing: border-box;
+    direction: ltr; /* LTR for header */
   }
   body.dark #header { background: #121212; }
 
@@ -158,7 +159,7 @@
     max-width: 100%; 
     margin: 0 auto; 
     line-height: 2;
-    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+    transition: transform 0.05s ease-out, opacity 0.05s ease-out;
     transform-origin: center;
   }
   
@@ -170,7 +171,7 @@
     }
     50% {
       transform: perspective(1000px) rotateY(-90deg);
-      opacity: 0.5;
+      opacity: 0.3;
     }
     100% {
       transform: perspective(1000px) rotateY(0deg);
@@ -185,7 +186,7 @@
     }
     50% {
       transform: perspective(1000px) rotateY(90deg);
-      opacity: 0.5;
+      opacity: 0.3;
     }
     100% {
       transform: perspective(1000px) rotateY(0deg);
@@ -194,11 +195,11 @@
   }
   
   #versesContainer.flipping-right {
-    animation: flipRight 0.6s ease-in-out;
+    animation: flipRight 0.35s ease-in-out;
   }
   
   #versesContainer.flipping-left {
-    animation: flipLeft 0.6s ease-in-out;
+    animation: flipLeft 0.35s ease-in-out;
   }
   
   #versesContainer.dragging {
@@ -249,15 +250,15 @@
       <div id="pageSelectOptions"></div>
     </div>
     <div id="navButtons">
-      <button id="prevPage">▶</button>
       <button id="nextPage">◀</button>
+      <button id="prevPage">▶</button>
     </div>
   </div>
 
   <!-- Right side: theme and font buttons -->
   <div id="buttonsContainer">
-    <button id="fontIncrease">+</button>
     <button id="fontDecrease">−</button>
+    <button id="fontIncrease">+</button>
     <button id="themeBtn">🌙</button>
   </div>
 </div>
@@ -418,8 +419,8 @@ let startY = 0;
 let currentX = 0;
 let isDragging = false;
 let isMoving = false;
-const minSwipe = 80;
-const swipeThreshold = 150; // Distance needed to trigger page change
+const minSwipe = 60;
+const swipeThreshold = 120; // Distance needed to trigger page change
 
 // Touch events
 document.addEventListener('touchstart', e => {
@@ -505,12 +506,12 @@ document.addEventListener('mouseup', e => {
 // Apply visual feedback during drag
 function applyDragEffect(dx) {
   // Limit the drag effect
-  const maxDrag = 100;
+  const maxDrag = 80;
   const limitedDx = Math.max(-maxDrag, Math.min(maxDrag, dx));
   
   // Calculate rotation and opacity based on drag distance
-  const rotationY = (limitedDx / maxDrag) * 15; // Max 15 degrees
-  const opacity = 1 - (Math.abs(limitedDx) / maxDrag) * 0.3; // Max 30% fade
+  const rotationY = (limitedDx / maxDrag) * 12; // Max 12 degrees
+  const opacity = 1 - (Math.abs(limitedDx) / maxDrag) * 0.25; // Max 25% fade
   
   versesContainer.style.transform = `perspective(1000px) rotateY(${rotationY}deg)`;
   versesContainer.style.opacity = opacity;
@@ -565,12 +566,12 @@ function goToPage(pageIndex, direction = 'none') {
     } else {
       document.body.classList.add('not-first-page');
     }
-  }, direction === 'none' ? 0 : 300);
+  }, direction === 'none' ? 0 : 175);
   
   // Remove animation class after animation completes
   setTimeout(() => {
     versesContainer.classList.remove('flipping-right', 'flipping-left');
-  }, 600);
+  }, 350);
 }
 
 // Navigation button click handlers
