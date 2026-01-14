@@ -14,6 +14,10 @@
     text-align: center;
     direction: rtl;
     transition: background 0.3s, color 0.3s;
+
+    max-width: 1000px;  /* limits width on large screens */
+    margin: 0 auto;      /* centers content horizontally */
+    box-sizing: border-box; /* includes padding in width */
   }
   body.dark { background: #121212; color: #f0f0f0; }
 
@@ -66,16 +70,17 @@
   .verse { font-size: 24px; margin: 12px 0; display: inline; position: relative; }
   .verse-number { color: green; font-weight: bold; margin-left: 8px; cursor: pointer; }
 
+  /* Fixed popover near button */
   .popover {
     display: none;
-    position: absolute;
+    position: fixed;          /* fixed relative to viewport */
     background-color: #fff;
     color: #000;
     border: 1px solid #aaa;
     border-radius: 8px;
     padding: 10px 14px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.25);
-    z-index: 10;
+    z-index: 9999;
     font-size: 16px;
     max-width: 280px;
     text-align: left;
@@ -96,14 +101,13 @@
 <body>
 
 <div id="header">
+  <select id="pageSelect"></select>
+
   <div id="buttonsContainer">
     <button id="fontIncrease">+</button>
     <button id="fontDecrease">−</button>
     <button id="themeBtn">🌙</button>
-    
   </div>
-
-  <select id="pageSelect"></select>
 </div>
 
 <h1 id="surahName">الفاتحة</h1>
@@ -163,10 +167,29 @@ function displayVerses(pageIndex=0){
     el.addEventListener('click', ()=>{
       const idx = el.dataset.index;
       const pop = document.getElementById('popover-' + idx);
-      document.querySelectorAll('.popover').forEach(p=>{ if(p!==pop) p.style.display='none'; });
-      pop.style.display = (pop.style.display==='block') ? 'none':'block';
-      pop.style.top = (el.offsetTop + 30) + "px";
-      pop.style.left = (el.offsetLeft - 10) + "px";
+
+      // hide other popovers
+      document.querySelectorAll('.popover').forEach(p=>{
+        if(p!==pop) p.style.display='none';
+      });
+
+      if(pop.style.display==='block'){
+        pop.style.display='none';
+        return;
+      }
+
+      // position popover near button (fixed, ignores body margins)
+      const rect = el.getBoundingClientRect();
+      pop.style.top = (rect.bottom + 8) + "px"; // 8px below button
+      pop.style.left = rect.left + "px";
+
+      // keep inside viewport horizontally
+      const popWidth = pop.offsetWidth;
+      if(rect.left + popWidth > window.innerWidth - 8){
+        pop.style.left = (window.innerWidth - popWidth - 8) + "px";
+      }
+
+      pop.style.display='block';
     });
   });
 
