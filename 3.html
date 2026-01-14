@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>سورة الفاتحة</title>
+    
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/> <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script> -->
+    
+    <link rel="stylesheet" href="../bootsrap/swiper-bundle.min.css"/>
+    <script src="../bootsrap/swiper-bundle.min.js"></script>
+    <link href="../bootsrap/bootstrap.min.css" rel="stylesheet">
+    <script src="../bootsrap/bootstrap.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #F4E4C1;
+            --text-color: #000000;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Traditional Arabic', 'Arabic Typesetting', Arial, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .theme-dark {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .control-btn:hover {
+            background-color: rgba(128, 128, 128, 0.2);
+        }
+
+
+
+        #quran_Surah {
+            font-size: 28px;
+            line-height: 2.5;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #quran_Surah a {
+            color: #2E7D32 !important;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 4px;
+        }
+
+        #quran_Surah a:hover {
+            color: #1B5E20 !important;
+        }
+
+        .popover {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid #2E7D32;
+        }
+
+        .popover-header {
+            background-color: #2E7D32;
+            color: white;
+            border-bottom: none;
+        }
+
+        .popover-body {
+            color: var(--text-color);
+        }
+
+        .theme-dark .popover {
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+            border: 2px solid #4CAF50;
+        }
+
+        .theme-dark .popover-header {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .theme-dark .popover-body {
+            color: #e0e0e0;
+            background-color: #2a2a2a;
+        }
+
+        .theme-dark .popover .popover-arrow::after {
+            border-top-color: #2a2a2a;
+            border-bottom-color: #2a2a2a;
+        }
+
+        .no-break {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body id="bodyContainer" style="display: block;margin: 0;height: auto">
+    <!-- tools -->
+    <div style="height: 50px;width: 100%;display: flex;align-items: center;justify-content: space-between;padding: 0 10px;" dir="rtl">
+        <div style="display: flex;align-items: center;gap: 5px;">
+            <!-- Zoom controls -->
+            <svg id="zoom-in" class="control-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <svg id="zoom-out" class="control-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+
+            <!-- Theme toggle -->
+            <svg id="theme-toggle" class="control-btn" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path id="theme-icon-path" stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+        </div>
+
+        <!-- Page Number Dropdown -->
+        <div class="dropdown" id="page-dropdown">
+            <button class="btn" id="page-number" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span style="position: relative;bottom: 5px; text-align: center">1</span>
+            </button>
+            <ul class="dropdown-menu tool-dropdowns" id="dropdown-list">
+                <li><button class="dropdown-item dropdown-pages" type="button" data-index="0">1</button></li>
+            </ul>
+        </div>
+    </div>
+
+    <h2 style="text-align: center;font-family: 'Surah Name';font-weight: lighter;font-size: 45px;margin: 20px 0;">
+        سورة الفاتحة
+    </h2>
+
+    <!-- Quran Text -->
+    <div id="slider-container" class="quran height" dir="rtl" style="max-width: 720px;display: block;margin: 0 auto">
+        <div class="swiper height">
+            <div class="swiper-wrapper height">
+                <div class="swiper-slide height" data-page="1" style="display:flex;align-items: center;">
+                    <p id="quran_Surah">
+                        <span style="display: block; text-align: center; font-size: 2em; margin: 30px 0; font-weight: bold;">
+                            بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+                        </span>
+                        <span>
+                            بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-content="In the name of Allah, most benevolent, ever-merciful."><span class="no-break">&#91; 1 &#93;</span></a>
+                            ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-content="ALL PRAISE BE to Allah, Lord of all the worlds,"><span class="no-break">&#91; 2 &#93;</span></a>
+                            ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-content="Most beneficent, ever-merciful,"><span class="no-break">&#91; 3 &#93;</span></a>
+                            مَـٰلِكِ يَوْمِ ٱلدِّينِ
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-content="King of the Day of Judgement."><span class="no-break">&#91; 4 &#93;</span></a>
+                            إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-content="You alone we worship, and to You alone turn for help."><span class="no-break">&#91; 5 &#93;</span></a>
+                            ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-content="Guide us (O Lord) to the path that is straight,"><span class="no-break">&#91; 6 &#93;</span></a>
+                            صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ
+                            <a tabindex="0" role="button" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-content="The path of those You have blessed, Not of those who have earned Your anger, nor those who have gone astray."><span class="no-break">&#91; 7 &#93;</span></a>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIconPath = document.getElementById('theme-icon-path');
+        const body = document.body;
+        
+        // Moon icon path (for light mode - clicking will switch to dark)
+        const moonPath = "M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z";
+        
+        // Sun icon path (for dark mode - clicking will switch to light)
+        const sunPath = "M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z";
+        
+        function updateThemeIcon() {
+            if (body.classList.contains('theme-dark')) {
+                themeIconPath.setAttribute('d', sunPath);
+            } else {
+                themeIconPath.setAttribute('d', moonPath);
+            }
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('theme-dark');
+            updateThemeIcon();
+            localStorage.setItem('theme', body.classList.contains('theme-dark') ? 'dark' : 'light');
+        });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('theme-dark');
+        }
+        updateThemeIcon();
+
+        // Zoom functionality
+        let currentFontSize = 28;
+        document.getElementById('zoom-in').addEventListener('click', () => {
+            currentFontSize += 2;
+            document.getElementById('quran_Surah').style.fontSize = currentFontSize + 'px';
+        });
+
+        document.getElementById('zoom-out').addEventListener('click', () => {
+            if (currentFontSize > 16) {
+                currentFontSize -= 2;
+                document.getElementById('quran_Surah').style.fontSize = currentFontSize + 'px';
+            }
+        });
+
+        // Initialize Bootstrap popovers
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+    </script>
+</body>
+</html>
