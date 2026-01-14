@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سورة الفاتحة</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: #f9f9f9;
+    color: #000;
+    padding: 30px;
+    text-align: center;
+    direction: rtl;
+    position: relative;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  body.dark {
+    background: #121212;
+    color: #f0f0f0;
+  }
+
+  #pageSelect {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 7px 10px;
+    font-size: 18px;
+  }
+
+  #buttonsContainer {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #buttonsContainer button {
+    padding: 7px 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  h1 {
+    font-size: 42px;
+    margin-bottom: 15px;
+  }
+
+  .bismillah {
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #555;
+  }
+
+  body.dark .bismillah {
+    color: #ccc;
+  }
+
+  .verse {
+    font-size: 24px;
+    margin: 20px 0;
+    display: inline-block;
+    position: relative;
+  }
+
+  .verse-number {
+    color: green;
+    font-weight: bold;
+    margin-left: 10px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .popover {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    padding: 10px 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 10;
+    font-size: 18px;
+    max-width: 300px;
+    text-align: left;
+    line-height: 1.4;
+    direction: ltr;
+  }
+
+  body.dark .popover {
+    background-color: #222;
+    color: #f0f0f0;
+    border-color: #555;
+  }
+</style>
+</head>
+<body>
+
+<select id="pageSelect"></select>
+
+<div id="buttonsContainer">
+  <button id="themeBtn">🌙</button>
+  <button id="fontDecrease">−</button>
+  <button id="fontIncrease">+</button>
+</div>
+
+<h1 id="surahName">الفاتحة</h1>
+<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+
+<div id="versesContainer"></div>
+
+<script>
+// JSON with verses
+const surahData = {
+  name: "الفاتحة",
+  verses: [
+    {arabic: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", translation: "All praise is due to Allah, Lord of the worlds."},
+    {arabic: "الرَّحْمَنِ الرَّحِيمِ", translation: "The Most Gracious, the Most Merciful."},
+    {arabic: "مَالِكِ يَوْمِ الدِّينِ", translation: "Master of the Day of Judgment."},
+    {arabic: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ", translation: "You alone we worship, and You alone we ask for help."},
+    {arabic: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ", translation: "Guide us to the straight path."},
+    {arabic: "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ", translation: "The path of those upon whom You have bestowed favor, not of those who have evoked [Your] anger or of those who are astray."}
+  ]
+};
+
+const maxVersesPerPage = 16; // max verses per page
+
+// Split verses into pages dynamically
+const totalPages = Math.ceil(surahData.verses.length / maxVersesPerPage);
+const pages = [];
+for(let i=0; i<totalPages; i++){
+  pages.push(surahData.verses.slice(i*maxVersesPerPage, (i+1)*maxVersesPerPage));
+}
+
+// Populate page dropdown
+const pageSelect = document.getElementById('pageSelect');
+for(let i=0; i<totalPages; i++){
+  const option = document.createElement('option');
+  option.value = i;
+  option.text = "Page " + (i+1);
+  pageSelect.appendChild(option);
+}
+
+// Verse font size
+let currentFontSize = 24;
+
+// Display verses for page
+const versesContainer = document.getElementById('versesContainer');
+function displayVerses(pageIndex=0){
+  versesContainer.innerHTML = "";
+  pages[pageIndex].forEach((verse, idx)=>{
+    const verseDiv = document.createElement('div');
+    verseDiv.className = "verse";
+    verseDiv.style.fontSize = currentFontSize + "px";
+    const verseNumber = pageIndex*maxVersesPerPage + idx + 1;
+    verseDiv.innerHTML = `
+      ${verse.arabic} <span class="verse-number" data-index="${verseNumber-1}">[${verseNumber}]</span>
+      <div class="popover" id="popover-${verseNumber-1}">${verse.translation}</div>
+    `;
+    versesContainer.appendChild(verseDiv);
+  });
+
+  // Popover toggle
+  document.querySelectorAll('.verse-number').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const idx = el.dataset.index;
+      const pop = document.getElementById('popover-' + idx);
+      document.querySelectorAll('.popover').forEach(p=>{
+        if(p !== pop) p.style.display = 'none';
+      });
+      pop.style.display = (pop.style.display === 'block') ? 'none' : 'block';
+      pop.style.top = (el.offsetTop + 30) + "px";
+      pop.style.left = (el.offsetLeft - 10) + "px";
+    });
+  });
+
+  // Close popover on click outside
+  document.addEventListener('click', (e)=>{
+    if(!e.target.classList.contains('verse-number')){
+      document.querySelectorAll('.popover').forEach(p=>p.style.display='none');
+    }
+  });
+}
+
+// Initial load
+displayVerses(0);
+
+// Page change
+pageSelect.addEventListener('change', (e)=>{
+  displayVerses(parseInt(e.target.value));
+});
+
+// Theme toggle
+const themeBtn = document.getElementById('themeBtn');
+themeBtn.addEventListener('click', ()=>{
+  document.body.classList.toggle('dark');
+  themeBtn.textContent = document.body.classList.contains('dark') ? "☀️" : "🌙";
+});
+
+// Font buttons
+document.getElementById('fontIncrease').addEventListener('click', ()=>{
+  if(currentFontSize < 40){
+    currentFontSize += 2;
+    displayVerses(parseInt(pageSelect.value));
+  }
+});
+document.getElementById('fontDecrease').addEventListener('click', ()=>{
+  if(currentFontSize > 14){
+    currentFontSize -= 2;
+    displayVerses(parseInt(pageSelect.value));
+  }
+});
+</script>
+
+</body>
+</html>
