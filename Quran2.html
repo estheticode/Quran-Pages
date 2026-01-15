@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>القرآن الكريم</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   body {
@@ -82,40 +83,14 @@
   body.dark .verse-number { color: #4ade80; }
 
   .popover {
-    display: none;
-    position: absolute;
-    background-color: #fff;
-    border: 1px solid #aaa;
-    border-radius: 12px;
-    z-index: 10001;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    max-width: 40vw;
-    min-width: 120px;
-    font-size: 15px;
-    line-height: 1.4;
+    max-width: 400px;
     direction: ltr;
     text-align: left;
-    overflow-y: auto;
-    max-height: 250px;
-  }
-
-  .popover-content {
-    padding: 10px;
-    word-wrap: break-word;
   }
   
   body.dark .popover { background:#1e1e1e; color:#f0f0f0; border-color:#444; }
-  
-  .popover-close { 
-    display: block; text-align: right; font-size: 14px; color: green; 
-    cursor: pointer; font-weight: bold;
-    position: sticky; top: 0; 
-    background: inherit; 
-    padding: 10px 15px 5px 15px;
-    z-index: 2;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-  }
-  body.dark .popover-close { color: #4ade80; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  body.dark .popover-header { background:#2a2a2a; color:#f0f0f0; border-bottom-color:#444; }
+  body.dark .popover-body { background:#1e1e1e; color:#f0f0f0; }
 
   @keyframes flipFastLeft { 
     0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
@@ -134,10 +109,7 @@
   @media (max-width: 500px) {
     h1#surahName { font-size: 32px; }
     .verse { font-size: 20px; }
-    .popover { 
-      max-width: 70vw;
-      min-width: 80px;
-    }
+    .popover { max-width: 280px; }
   }
 </style>
 </head>
@@ -175,6 +147,7 @@
 
 <div id="versesContainer"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="quranData.js"></script>
 
 <script>
@@ -185,6 +158,7 @@ let currentPage = 0;
 let currentFontSize = 24;
 let pages = [];
 let totalPages = 0;
+let activePopover = null;
 
 const versesContainer = document.getElementById('versesContainer');
 const surahSelectButton = document.getElementById('surahSelectButton');
@@ -248,10 +222,7 @@ function initPageDropdown() {
 function displayVerses(pageIndex) {
   versesContainer.innerHTML = "";
   
-  const isMobile = window.innerWidth < 600;
-  const baseWidth = isMobile ? 250 : 400; 
-  const multiplier = isMobile ? 4 : 8; 
-  const calculatedWidth = baseWidth - (currentFontSize * multiplier);
+  const popoverFontSize = Math.max(12, Math.min(18, currentFontSize * 0.65));
 
   pages[pageIndex].forEach((verse, idx) => {
     const verseNum = pageIndex * maxVersesPerPage + idx + 1;
@@ -260,84 +231,46 @@ function displayVerses(pageIndex) {
     verseDiv.style.fontSize = currentFontSize + "px";
     
     verseDiv.innerHTML = `
-      ${verse.arabic} <span class="verse-number" data-index="${verseNum}">[${verseNum}]</span>
-      <div class="popover" id="popover-${verseNum}" style="width: ${calculatedWidth}px">
-        <span class="popover-close">Close ×</span>
-        <div class="popover-content">${verse.translation}</div>
-      </div>
+      ${verse.arabic} <span class="verse-number" data-bs-toggle="popover" 
+        data-bs-trigger="click" data-bs-placement="auto" 
+        data-bs-content="${verse.translation.replace(/"/g, '&quot;')}" 
+        data-index="${verseNum}">[${verseNum}]</span>
     `;
     versesContainer.appendChild(verseDiv);
   });
 
-  document.querySelectorAll('.verse-number').forEach(el => {
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const num = el.dataset.index;
-      const pop = document.getElementById('popover-' + num);
-      
-      document.querySelectorAll('.popover').forEach(p => { if(p !== pop) p.style.display='none'; });
-      
-      pop.style.display = 'block';
-
-      const closeBtn = pop.querySelector('.popover-close');
-      closeBtn.onclick = (event) => {
-        event.stopPropagation();
-        pop.style.display = 'none';
-      };
-
-      const rect = el.getBoundingClientRect();
-      const popWidth = pop.offsetWidth;
-      const popHeight = pop.offsetHeight;
-      const margin = 10;
-      const offset = 2; // Very close - just 2px gap
-      
-      const viewportHeight = window.innerHeight;
-      const viewportWidth = window.innerWidth;
-      
-      // Get parent container position for relative positioning
-      const containerRect = versesContainer.getBoundingClientRect();
-      
-      // Calculate available space from verse number position on screen
-      const spaceBelow = viewportHeight - rect.bottom;
-      const spaceAbove = rect.top;
-      const spaceRight = viewportWidth - rect.right;
-      const spaceLeft = rect.left;
-      
-      let top, left;
-      
-      // Position based on which direction has most space
-      const maxSpace = Math.max(spaceBelow, spaceAbove, spaceRight, spaceLeft);
-      
-      if (maxSpace === spaceBelow) {
-        // Below - stay very close
-        top = el.offsetTop + el.offsetHeight + offset;
-        left = el.offsetLeft + (el.offsetWidth / 2) - (popWidth / 2);
-      } else if (maxSpace === spaceAbove) {
-        // Above - stay very close
-        top = el.offsetTop - popHeight - offset;
-        left = el.offsetLeft + (el.offsetWidth / 2) - (popWidth / 2);
-      } else if (maxSpace === spaceRight) {
-        // Right - stay very close
-        top = el.offsetTop + (el.offsetHeight / 2) - (popHeight / 2);
-        left = el.offsetLeft + el.offsetWidth + offset;
-      } else {
-        // Left - stay very close
-        top = el.offsetTop + (el.offsetHeight / 2) - (popHeight / 2);
-        left = el.offsetLeft - popWidth - offset;
+  // Initialize Bootstrap popovers
+  document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+    const popover = new bootstrap.Popover(el, {
+      html: true,
+      sanitize: false,
+      customClass: 'custom-popover',
+      template: `<div class="popover" role="tooltip" style="font-size: ${popoverFontSize}px;">
+                   <div class="popover-arrow"></div>
+                   <h3 class="popover-header">
+                     <span style="cursor:pointer;float:right;" onclick="this.closest('.popover').style.display='none'">×</span>
+                     Translation
+                   </h3>
+                   <div class="popover-body"></div>
+                 </div>`
+    });
+    
+    el.addEventListener('shown.bs.popover', function () {
+      if (activePopover && activePopover !== popover) {
+        activePopover.hide();
       }
-      
-      // Minimal horizontal adjustment only if absolutely necessary
-      const containerWidth = versesContainer.offsetWidth;
-      if (left < 0) left = 5;
-      if (left + popWidth > containerWidth) left = containerWidth - popWidth - 5;
-      
-      pop.style.top = top + "px";
-      pop.style.left = left + "px";
+      activePopover = popover;
     });
   });
 }
 
 function goToPage(pageIndex, direction = 'none') {
+  // Hide any active popover
+  if (activePopover) {
+    activePopover.hide();
+    activePopover = null;
+  }
+  
   if(pageIndex < 0) {
     currentSurahIndex > 0 ? loadSurah(currentSurahIndex - 1, 'last', direction) : loadSurah(quranData.surahs.length - 1, 'last', direction);
     return;
@@ -382,7 +315,7 @@ document.getElementById('fontDecrease').onclick = () => {
 };
 
 document.addEventListener('keydown', (e) => {
-  const isPopoverOpen = !!document.querySelector('.popover[style*="display: block"]');
+  const isPopoverOpen = !!document.querySelector('.popover.show');
   if (isPopoverOpen) return;
 
   if (e.key === "ArrowRight") {
@@ -424,10 +357,14 @@ surahSelectButton.onclick = (e) => { e.stopPropagation(); surahSelectOptions.sty
 pageSelectButton.onclick = (e) => { e.stopPropagation(); pageSelectOptions.style.display = 'block'; };
 
 document.addEventListener('click', (e) => {
-  if (!e.target.closest('.popover') && !e.target.closest('.verse-number')) {
-    document.querySelectorAll('.popover').forEach(p => p.style.display = 'none');
+  if (!e.target.closest('.popover') && !e.target.closest('[data-bs-toggle="popover"]')) {
+    if (activePopover) {
+      activePopover.hide();
+      activePopover = null;
+    }
   }
-  surahSelectOptions.style.display = 'none'; pageSelectOptions.style.display = 'none';
+  surahSelectOptions.style.display = 'none'; 
+  pageSelectOptions.style.display = 'none';
 });
 
 document.getElementById('themeBtn').onclick = () => {
