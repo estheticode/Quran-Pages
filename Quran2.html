@@ -158,7 +158,6 @@
 
   .popover {
     max-width: 400px;
-    direction: ltr;
     text-align: left;
   }
   
@@ -359,7 +358,21 @@ function initPageDropdown() {
 function displayVerses(pageIndex) {
   versesContainer.innerHTML = "";
   
-  const popoverFontSize = Math.max(12, Math.min(18, currentFontSize * 0.65));
+  const transDir = quranData.surahs[currentSurahIndex].translation_dir || 'ltr';
+  
+  // --- FONT CALCULATION ---
+  const defaultArabicSize = 24;
+  const defaultPopoverSize = 14; // Reduced from 16 to 14
+  let popoverFontSize = defaultPopoverSize;
+
+  // Only increase if user clicked '+' and Arabic is > 24
+  if (currentFontSize > defaultArabicSize) {
+    popoverFontSize = defaultPopoverSize + (currentFontSize - defaultArabicSize);
+  }
+  
+  // Safety cap (min 14, max 35)
+  popoverFontSize = Math.max(14, Math.min(35, popoverFontSize));
+  // ------------------------
 
   pages[pageIndex].forEach((verse, idx) => {
     const verseNum = pageIndex * maxVersesPerPage + idx + 1;
@@ -367,29 +380,33 @@ function displayVerses(pageIndex) {
     verseDiv.className = "verse";
     verseDiv.style.fontSize = currentFontSize + "px";
     
+    // Styled translation with the calculated size
+    const styledTranslation = `<span style="font-size: ${popoverFontSize}px; line-height: 1.5; display: block;">${verse.translation.replace(/"/g, '&quot;')}</span>`;
+    
     verseDiv.innerHTML = `
       ${verse.arabic} <span class="verse-number" data-bs-toggle="popover" 
         data-bs-trigger="click" data-bs-placement="auto" 
-        data-bs-content="${verse.translation.replace(/"/g, '&quot;')}" 
+        data-bs-content='${styledTranslation}' 
         data-index="${verseNum}">[${verseNum}]</span>
     `;
     versesContainer.appendChild(verseDiv);
   });
 
-  // Initialize Bootstrap popovers
+  // Re-initialize Popovers
   document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
     const popover = new bootstrap.Popover(el, {
-      html: true,
-      sanitize: true,
+      html: true, 
+      sanitize: false, 
       container: 'body',
-      template: `<div class="popover" role="tooltip">
-                   <div class="popover-arrow"></div>
-                   <h3 class="popover-header">
-                     <span class="close-popover">×</span>
-                     <span style="font-size: ${popoverFontSize}px;">Translation</span>
-                   </h3>
-                   <div class="popover-body" style="font-size: ${popoverFontSize}px;"></div>
-                 </div>`
+      template: `
+        <div class="popover" role="tooltip" style="direction: ${transDir}; text-align: ${transDir === 'rtl' ? 'right' : 'left'};">
+          <div class="popover-arrow"></div>
+          <h3 class="popover-header" style="padding: 8px 12px;">
+            <span class="close-popover" style="float: ${transDir === 'rtl' ? 'left' : 'right'} !important;">×</span>
+            <span style="font-size: 13px; font-weight: bold; opacity: 0.8;">Translation</span>
+          </h3>
+          <div class="popover-body" style="direction: ${transDir}; padding: 12px;"></div>
+        </div>`
     });
     
     el.addEventListener('shown.bs.popover', function () {
@@ -398,17 +415,15 @@ function displayVerses(pageIndex) {
       }
       activePopover = popover;
       
-      // Add click handler to close button after a short delay
       setTimeout(() => {
-        const closeBtns = document.querySelectorAll('.popover.show .close-popover');
-        closeBtns.forEach(closeBtn => {
+        const closeBtn = document.querySelector('.popover.show .close-popover');
+        if (closeBtn) {
           closeBtn.onclick = (e) => {
             e.stopPropagation();
-            e.preventDefault();
             popover.hide();
             activePopover = null;
           };
-        });
+        }
       }, 50);
     });
   });
@@ -452,6 +467,12 @@ function updateProgressBar() {
 }
 
 function updateZoom(newSize) {
+  // Hide active popover so it recreates with new size next time it's clicked
+  if (activePopover) {
+    activePopover.hide();
+    activePopover = null;
+  }
+  
   currentFontSize = newSize;
   document.documentElement.style.setProperty('--current-font-size', currentFontSize);
   displayVerses(currentPage);
