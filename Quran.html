@@ -65,7 +65,12 @@
     gap: 10px;
     align-items: flex-start;
   }
-
+  #rightSide {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end; /* aligns children to the right */
+  }
   #dropdownsRow {
     display: flex;
     gap: 10px;
@@ -127,7 +132,6 @@
   #buttonsContainer {
     display: flex;
     gap: 10px;
-    order: 1;
   }
   #buttonsContainer button {
     padding: 6px 12px;
@@ -255,29 +259,33 @@
 
 
 <div id="header">
+  <!-- Left side: dropdowns -->
   <div id="leftSide">
-    <div id="dropdownsRow">
+    <div class="dropdown-row">
       <div class="dropdown-container" id="surahSelectContainer">
         <div class="dropdown-button" id="surahSelectButton">سورة 87 ▼</div>
         <div class="dropdown-options" id="surahSelectOptions"></div>
       </div>
     </div>
-    <div id="dropdownsRow">
+    <div class="dropdown-row">
       <div class="dropdown-container" id="pageSelectContainer">
         <div class="dropdown-button" id="pageSelectButton">صفحة 1 ▼</div>
         <div class="dropdown-options" id="pageSelectOptions"></div>
       </div>
     </div>
-    <div id="navButtons">
-      <button id="nextPage">◀</button>
-      <button id="prevPage">▶</button>
-    </div>
   </div>
 
-  <div id="buttonsContainer">
-    <button id="fontDecrease">−</button>
-    <button id="fontIncrease">+</button>
-    <button id="themeBtn">🌙</button>
+  <!-- Right side: theme + nav buttons -->
+  <div id="rightSide">
+    <div id="buttonsContainer">
+      <button id="fontDecrease">−</button>
+      <button id="fontIncrease">+</button>
+      <button id="themeBtn">🌙</button>
+    </div>
+    <div id="navButtons">
+      <button id="prevPage">◀</button>
+      <button id="nextPage">▶</button>
+    </div>
   </div>
 </div>
 
