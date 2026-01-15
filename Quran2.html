@@ -43,24 +43,98 @@
   #leftSide { align-items: flex-start; }
   #rightSide { align-items: flex-end; }
   
-  #navButtons, #buttonsContainer { display: flex; gap: 10px; }
+  #navButtons, #buttonsContainer { display: flex; gap: 8px; }
   #navButtons button, #buttonsContainer button {
-    padding: 6px 12px; font-size: 18px; border: none; border-radius: 6px;
-    cursor: pointer; background: #e0e0e0; color: #000;
+  padding: 6px 14px;
+  font-size: 18px;
+  border: none;
+  border-radius: 999px; /* fully rounded */
+  cursor: pointer;
+  background: #e0e0e0;
+  color: #000;
+  transition: background 0.3s, color 0.3s;
   }
   body.dark #navButtons button, body.dark #buttonsContainer button { background: #333; color: #f0f0f0; }
 
   .dropdown-container { position: relative; display: inline-block; }
   .dropdown-button {
-    padding: 6px 12px; font-size: 16px; border-radius: 6px;
-    border: 1px solid #aaa; background: #fff; min-width: 120px;
+  padding: 6px 16px;
+  font-size: 16px;
+  border-radius: 999px;
+  border: 1px solid #aaa;
+  background: #fff;
+  min-width: 120px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
   }
   body.dark .dropdown-button { background:#222; color:#f0f0f0; border-color:#555; }
 
   .dropdown-options {
-    position: fixed; background: #fff; border: 1px solid #aaa;
-    border-radius: 6px; max-height: 300px; overflow-y: auto;
-    z-index: 10000; display: none; min-width: 150px;
+  position: fixed;
+  background: #fff;
+  border: 1px solid #aaa;
+  border-radius: 16px;   /* more rounded */
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10000;
+  display: none;
+  min-width: 150px;
+  padding: 6px 0;       /* spacing inside */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  .dropdown-options > div {
+  border-radius: 12px;
+  margin: 2px 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  }
+  .dropdown-options > div {
+  padding: 6px 10px;
+  background: transparent;
+  }
+
+ .dropdown-options > div:hover {
+  background: #f0f0f0;
+  }
+
+  body.dark .dropdown-options > div:hover {
+  background: #2a2a2a;
+  }
+
+  /* WebKit (Chrome, Edge, Safari) */
+  .dropdown-options::-webkit-scrollbar {
+  width: 8px;
+  }
+
+  .dropdown-options::-webkit-scrollbar-track {
+  background: transparent;
+  }
+
+  .dropdown-options::-webkit-scrollbar-thumb {
+  background-color: green;
+  border-radius: 8px;
+  }
+
+  .dropdown-options::-webkit-scrollbar-thumb:hover {
+  background-color: #0f9d58;
+  }
+
+  /* Firefox */
+  .dropdown-options {
+  scrollbar-width: thin;
+  scrollbar-color: green transparent;
+  }
+
+  /* Dark mode */
+  body.dark .dropdown-options::-webkit-scrollbar-thumb {
+  background-color: #4ade80;
+  }
+
+  /* Remove scrollbar arrows (WebKit) */
+  .dropdown-options::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
   }
   body.dark .dropdown-options { background:#222; color:#f0f0f0; }
 
@@ -110,6 +184,36 @@
     line-height: 1 !important;
     margin-left: 10px !important;
   }
+
+  /* Green scrollbar for popover body */
+    .popover-body::-webkit-scrollbar {
+    width: 8px;
+    }
+
+    .popover-body::-webkit-scrollbar-track {
+    background: transparent;
+    }
+
+    .popover-body::-webkit-scrollbar-thumb {
+    background-color: green;
+    border-radius: 8px;
+    }
+
+    .popover-body::-webkit-scrollbar-thumb:hover {
+    background-color: #0f9d58;
+    }
+
+    /* Firefox */
+    .popover-body {
+    scrollbar-width: thin;
+    scrollbar-color: green transparent;
+    }
+
+    /* Dark mode tweak */
+    body.dark .popover-body::-webkit-scrollbar-thumb {
+    background-color: #4ade80;
+    }
+
   
   body.dark .popover { background:#1e1e1e; color:#f0f0f0; border-color:#444; }
   body.dark .popover-header { background:#2a2a2a !important; color:#f0f0f0; border-bottom-color:#444; }
@@ -136,6 +240,14 @@
     .popover { max-width: 280px; }
     .popover-body { max-height: 200px; }
   }
+
+  #fontDecrease,
+  #fontIncrease {
+  min-width: 45px;   /* increase width */
+  padding-left: 0;
+  padding-right: 0;
+  text-align: center;
+ }
 </style>
 </head>
 <body>
@@ -268,7 +380,7 @@ function displayVerses(pageIndex) {
   document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
     const popover = new bootstrap.Popover(el, {
       html: true,
-      sanitize: false,
+      sanitize: true,
       container: 'body',
       template: `<div class="popover" role="tooltip">
                    <div class="popover-arrow"></div>
