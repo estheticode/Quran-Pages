@@ -354,41 +354,46 @@ function displayVerses(pageIndex) {
   versesContainer.innerHTML = "";
   
   const currentSurah = quranData.surahs[currentSurahIndex];
-  const transDir = quranData.translation_dir || 'ltr';
+  // Prioritize surah-specific direction, fallback to global setting
+  const transDir = currentSurah.translation_dir || quranData.translation_dir || 'ltr';
   
   // --- FONT CALCULATION ---
   const defaultArabicSize = 24;
-  const defaultPopoverSize = 14; // Smaller default as requested
+  const isMobile = window.innerWidth < 500;
+  
+  // Higher default base for mobile (18px) vs desktop (15px)
+  const defaultPopoverSize = isMobile ? 18 : 15; 
   let popoverFontSize = defaultPopoverSize;
 
-  // Increase popover font only if Arabic font is increased via (+)
+  // Scale translation font up if user scales Arabic font via (+)
   if (currentFontSize > defaultArabicSize) {
     popoverFontSize = defaultPopoverSize + (currentFontSize - defaultArabicSize);
   }
-  popoverFontSize = Math.max(14, Math.min(35, popoverFontSize));
+  popoverFontSize = Math.max(defaultPopoverSize, Math.min(40, popoverFontSize));
 
   pages[pageIndex].forEach((verse, idx) => {
-    // Pull actual number from data to fix the "data-index" text bug
+    // Get actual verse number
     const verseNum = verse.number || (pageIndex * maxVersesPerPage + idx + 1);
     const verseDiv = document.createElement('div');
     verseDiv.className = "verse";
     verseDiv.style.fontSize = currentFontSize + "px";
     
-    // 1. Escape both single and double quotes to prevent breaking the HTML attribute
-    const escapedTranslation = verse.translation
+    // 1. Escape single and double quotes to prevent breaking the HTML attribute logic
+    const safeTranslation = verse.translation
       .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
+      .replace(/'/g, '&#39;'); 
     
-    // 2. Wrap in the styled span
-    const styledTranslation = `<span style="font-size: ${popoverFontSize}px; line-height: 1.5; display: block; direction: ${transDir};">${escapedTranslation}</span>`;
+    // 2. Wrap in a styled span. 
+    // We use single quotes for the inline style to stay safe inside the data-bs-content double quotes.
+    const styledTranslation = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: ${transDir};'>${safeTranslation}</span>`;
     
-    // 3. Render - Notice we use single quotes for data-bs-content='' 
-    // because our span uses double quotes for style=""
+    // 3. Render the verse and the popover trigger
+    // Using double quotes for data-bs-content to allow the single quotes inside styledTranslation
     verseDiv.innerHTML = `${verse.arabic} <span class="verse-number" 
         data-bs-toggle="popover" 
         data-bs-trigger="click" 
         data-bs-placement="auto" 
-        data-bs-content='${styledTranslation}' 
+        data-bs-content="${styledTranslation}" 
         data-index="${verseNum}">[${verseNum}]</span>`;
 
     versesContainer.appendChild(verseDiv);
@@ -398,7 +403,7 @@ function displayVerses(pageIndex) {
   document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
     const popover = new bootstrap.Popover(el, {
       html: true,
-      sanitize: false, // Required to allow the inline "style" on our translation span
+      sanitize: false, // Vital: allows the style attribute in our span
       container: 'body',
       template: `
         <div class="popover" role="tooltip" style="direction: ${transDir}; text-align: ${transDir === 'rtl' ? 'right' : 'left'};">
@@ -412,12 +417,13 @@ function displayVerses(pageIndex) {
     });
     
     el.addEventListener('shown.bs.popover', function () {
+      // Close any other open popovers
       if (activePopover && activePopover !== popover) {
         activePopover.hide();
       }
       activePopover = popover;
       
-      // Setup close button inside the popover
+      // Handle the custom "X" close button
       setTimeout(() => {
         const closeBtn = document.querySelector('.popover.show .close-popover');
         if (closeBtn) {
