@@ -88,9 +88,33 @@
     text-align: left;
   }
   
+  .popover-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background: #fff !important;
+  }
+  
+  .popover-body {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  .close-popover {
+    cursor: pointer !important;
+    float: right !important;
+    font-weight: bold !important;
+    color: green !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    margin-left: 10px !important;
+  }
+  
   body.dark .popover { background:#1e1e1e; color:#f0f0f0; border-color:#444; }
-  body.dark .popover-header { background:#2a2a2a; color:#f0f0f0; border-bottom-color:#444; }
+  body.dark .popover-header { background:#2a2a2a !important; color:#f0f0f0; border-bottom-color:#444; }
   body.dark .popover-body { background:#1e1e1e; color:#f0f0f0; }
+  body.dark .close-popover { color: #4ade80 !important; }
 
   @keyframes flipFastLeft { 
     0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
@@ -110,6 +134,7 @@
     h1#surahName { font-size: 32px; }
     .verse { font-size: 20px; }
     .popover { max-width: 280px; }
+    .popover-body { max-height: 200px; }
   }
 </style>
 </head>
@@ -244,14 +269,14 @@ function displayVerses(pageIndex) {
     const popover = new bootstrap.Popover(el, {
       html: true,
       sanitize: false,
-      customClass: 'custom-popover',
-      template: `<div class="popover" role="tooltip" style="font-size: ${popoverFontSize}px;">
+      container: 'body',
+      template: `<div class="popover" role="tooltip">
                    <div class="popover-arrow"></div>
                    <h3 class="popover-header">
-                     <span style="cursor:pointer;float:right;" onclick="this.closest('.popover').style.display='none'">×</span>
-                     Translation
+                     <span class="close-popover">×</span>
+                     <span style="font-size: ${popoverFontSize}px;">Translation</span>
                    </h3>
-                   <div class="popover-body"></div>
+                   <div class="popover-body" style="font-size: ${popoverFontSize}px;"></div>
                  </div>`
     });
     
@@ -260,6 +285,19 @@ function displayVerses(pageIndex) {
         activePopover.hide();
       }
       activePopover = popover;
+      
+      // Add click handler to close button after a short delay
+      setTimeout(() => {
+        const closeBtns = document.querySelectorAll('.popover.show .close-popover');
+        closeBtns.forEach(closeBtn => {
+          closeBtn.onclick = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            popover.hide();
+            activePopover = null;
+          };
+        });
+      }, 50);
     });
   });
 }
@@ -353,8 +391,18 @@ document.addEventListener('mouseup', e => handleEnd(e.clientX));
 
 document.getElementById('nextPage').onclick = () => goToPage(currentPage + 1, 'forward');
 document.getElementById('prevPage').onclick = () => goToPage(currentPage - 1, 'backward');
-surahSelectButton.onclick = (e) => { e.stopPropagation(); surahSelectOptions.style.display = 'block'; };
-pageSelectButton.onclick = (e) => { e.stopPropagation(); pageSelectOptions.style.display = 'block'; };
+
+surahSelectButton.onclick = (e) => { 
+  e.stopPropagation(); 
+  pageSelectOptions.style.display = 'none'; // Close page dropdown
+  surahSelectOptions.style.display = surahSelectOptions.style.display === 'block' ? 'none' : 'block';
+};
+
+pageSelectButton.onclick = (e) => { 
+  e.stopPropagation(); 
+  surahSelectOptions.style.display = 'none'; // Close surah dropdown
+  pageSelectOptions.style.display = pageSelectOptions.style.display === 'block' ? 'none' : 'block';
+};
 
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.popover') && !e.target.closest('[data-bs-toggle="popover"]')) {
