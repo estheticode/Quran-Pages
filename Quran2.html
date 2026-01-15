@@ -358,52 +358,59 @@ function initPageDropdown() {
 function displayVerses(pageIndex) {
   versesContainer.innerHTML = "";
   
-  const transDir = quranData.surahs[currentSurahIndex].translation_dir || 'ltr';
+  const currentSurah = quranData.surahs[currentSurahIndex];
+  const transDir = quranData.translation_dir || 'ltr';
   
   // --- FONT CALCULATION ---
   const defaultArabicSize = 24;
-  const defaultPopoverSize = 16;
+  const defaultPopoverSize = 14; // Smaller default as requested
   let popoverFontSize = defaultPopoverSize;
 
-  // Only increase if user clicked '+' and Arabic is > 24
+  // Increase popover font only if Arabic font is increased via (+)
   if (currentFontSize > defaultArabicSize) {
     popoverFontSize = defaultPopoverSize + (currentFontSize - defaultArabicSize);
   }
-  
-  // Safety cap (min 14, max 35)
   popoverFontSize = Math.max(14, Math.min(35, popoverFontSize));
-  // ------------------------
 
   pages[pageIndex].forEach((verse, idx) => {
-    const verseNum = pageIndex * maxVersesPerPage + idx + 1;
+    // Pull actual number from data to fix the "data-index" text bug
+    const verseNum = verse.number || (pageIndex * maxVersesPerPage + idx + 1);
     const verseDiv = document.createElement('div');
     verseDiv.className = "verse";
     verseDiv.style.fontSize = currentFontSize + "px";
     
-    // Styled translation with the calculated size
-    const styledTranslation = `<span style="font-size: ${popoverFontSize}px; line-height: 1.5; display: block;">${verse.translation.replace(/"/g, '&quot;')}</span>`;
+    // 1. Escape both single and double quotes to prevent breaking the HTML attribute
+    const escapedTranslation = verse.translation
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
     
-    verseDiv.innerHTML = `
-      ${verse.arabic} <span class="verse-number" data-bs-toggle="popover" 
-        data-bs-trigger="click" data-bs-placement="auto" 
+    // 2. Wrap in the styled span
+    const styledTranslation = `<span style="font-size: ${popoverFontSize}px; line-height: 1.5; display: block; direction: ${transDir};">${escapedTranslation}</span>`;
+    
+    // 3. Render - Notice we use single quotes for data-bs-content='' 
+    // because our span uses double quotes for style=""
+    verseDiv.innerHTML = `${verse.arabic} <span class="verse-number" 
+        data-bs-toggle="popover" 
+        data-bs-trigger="click" 
+        data-bs-placement="auto" 
         data-bs-content='${styledTranslation}' 
-        data-index="${verseNum}">[${verseNum}]</span>
-    `;
+        data-index="${verseNum}">[${verseNum}]</span>`;
+
     versesContainer.appendChild(verseDiv);
   });
 
-  // Re-initialize Popovers
+  // Initialize Bootstrap popovers
   document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
     const popover = new bootstrap.Popover(el, {
-      html: true, 
-      sanitize: false, 
+      html: true,
+      sanitize: false, // Required to allow the inline "style" on our translation span
       container: 'body',
       template: `
         <div class="popover" role="tooltip" style="direction: ${transDir}; text-align: ${transDir === 'rtl' ? 'right' : 'left'};">
           <div class="popover-arrow"></div>
           <h3 class="popover-header" style="padding: 8px 12px;">
-            <span class="close-popover" style="float: ${transDir === 'rtl' ? 'left' : 'right'} !important;">×</span>
-            <span style="font-size: 13px; font-weight: bold; opacity: 0.8;">Translation</span>
+            <span class="close-popover" style="float: ${transDir === 'rtl' ? 'left' : 'right'} !important; cursor: pointer;">×</span>
+            <span style="font-size: 13px; font-weight: bold; opacity: 0.7;">Translation</span>
           </h3>
           <div class="popover-body" style="direction: ${transDir}; padding: 12px;"></div>
         </div>`
@@ -415,6 +422,7 @@ function displayVerses(pageIndex) {
       }
       activePopover = popover;
       
+      // Setup close button inside the popover
       setTimeout(() => {
         const closeBtn = document.querySelector('.popover.show .close-popover');
         if (closeBtn) {
