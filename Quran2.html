@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>القرآن الكريم</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: #F4E4C1;
+    color: #000;
+    padding: 120px 20px 20px 20px;
+    text-align: center;
+    direction: rtl;
+    transition: background 0.3s, color 0.3s;
+    max-width: 1000px;  
+    margin: 0 auto;      
+    box-sizing: border-box;
+    overflow-x: hidden; 
+  }
+  body.dark { background: #121212; color: #f0f0f0; }
+
+  #progressBarContainer {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 6px;
+    background: #ddd; z-index: 9999;
+  }
+  body.dark #progressBarContainer { background: #333; }
+  #progressBar { height: 100%; width: 0; background: green; transition: width 0.2s ease; }
+
+  #header {
+    position: fixed; top: 6px; left: 0; right: 0;
+    margin: 0 auto; width: 100%; max-width: 1000px;
+    padding: 10px 20px; background: #F4E4C1; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    box-sizing: border-box; direction: ltr;
+  }
+  body.dark #header { background: #121212; }
+
+  #leftSide, #rightSide { display: flex; flex-direction: column; gap: 10px; }
+  #leftSide { align-items: flex-start; }
+  #rightSide { align-items: flex-end; }
+  
+  #navButtons, #buttonsContainer { display: flex; gap: 10px; }
+  #navButtons button, #buttonsContainer button {
+    padding: 6px 12px; font-size: 18px; border: none; border-radius: 6px;
+    cursor: pointer; background: #e0e0e0; color: #000;
+  }
+  body.dark #navButtons button, body.dark #buttonsContainer button { background: #333; color: #f0f0f0; }
+
+  .dropdown-container { position: relative; display: inline-block; }
+  .dropdown-button {
+    padding: 6px 12px; font-size: 16px; border-radius: 6px;
+    border: 1px solid #aaa; background: #fff; min-width: 120px;
+  }
+  body.dark .dropdown-button { background:#222; color:#f0f0f0; border-color:#555; }
+
+  .dropdown-options {
+    position: fixed; background: #fff; border: 1px solid #aaa;
+    border-radius: 6px; max-height: 300px; overflow-y: auto;
+    z-index: 10000; display: none; min-width: 150px;
+  }
+  body.dark .dropdown-options { background:#222; color:#f0f0f0; }
+
+  h1#surahName { font-size: 40px; margin: 5px 0; }
+  .bismillah { font-size: 26px; font-weight: bold; color: #555; margin: 5px 0 20px 0; }
+  body.dark .bismillah { color:#ccc; }
+  body.not-first-page #surahName, body.not-first-page .bismillah { display: none; }
+
+  #versesContainer { 
+    max-width: 100%; margin: 0 auto; line-height: 2;
+    position: relative; 
+    will-change: transform, opacity, filter;
+    transform-origin: center;
+    user-select: none; 
+    transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .verse { font-size: 24px; margin: 12px 0; display: inline; position: relative; }
+  .verse-number { color: green; font-weight: bold; margin-left: 8px; cursor: pointer; display: inline-block; }
+  body.dark .verse-number { color: #4ade80; }
+
+  .popover {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #aaa;
+    border-radius: 12px;
+    z-index: 10001;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    max-width: 40vw;
+    min-width: 120px;
+    font-size: 15px;
+    line-height: 1.4;
+    direction: ltr;
+    text-align: left;
+    overflow-y: auto;
+    max-height: 250px;
+  }
+
+  .popover-content {
+    padding: 10px;
+    word-wrap: break-word;
+  }
+  
+  body.dark .popover { background:#1e1e1e; color:#f0f0f0; border-color:#444; }
+  
+  .popover-close { 
+    display: block; text-align: right; font-size: 14px; color: green; 
+    cursor: pointer; font-weight: bold;
+    position: sticky; top: 0; 
+    background: inherit; 
+    padding: 10px 15px 5px 15px;
+    z-index: 2;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  body.dark .popover-close { color: #4ade80; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+  @keyframes flipFastLeft { 
+    0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
+    50% { transform: perspective(1000px) rotateY(45deg); opacity: 0.5; filter: blur(2px); } 
+    100% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
+  }
+  @keyframes flipFastRight { 
+    0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
+    50% { transform: perspective(1000px) rotateY(-45deg); opacity: 0.5; filter: blur(2px); } 
+    100% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
+  }
+  
+  .flipping-forward { animation: flipFastLeft 0.22s cubic-bezier(0.4, 0, 0.2, 1); }
+  .flipping-backward { animation: flipFastRight 0.22s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  @media (max-width: 500px) {
+    h1#surahName { font-size: 32px; }
+    .verse { font-size: 20px; }
+    .popover { 
+      max-width: 70vw;
+      min-width: 80px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="progressBarContainer"><div id="progressBar"></div></div>
+
+<div id="header">
+  <div id="leftSide">
+    <div class="dropdown-container">
+      <div class="dropdown-button" id="surahSelectButton">1. الأعلى ▼</div>
+      <div class="dropdown-options" id="surahSelectOptions"></div>
+    </div>
+    <div class="dropdown-container">
+      <div class="dropdown-button" id="pageSelectButton">Page 1 ▼</div>
+      <div class="dropdown-options" id="pageSelectOptions"></div>
+    </div>
+  </div>
+
+  <div id="rightSide">
+    <div id="buttonsContainer">
+      <button id="fontDecrease">−</button>
+      <button id="fontIncrease">+</button>
+      <button id="themeBtn">🌙</button>
+    </div>
+    <div id="navButtons">
+      <button id="nextPage">◀</button>
+      <button id="prevPage">▶</button> 
+    </div>
+  </div>
+</div>
+
+<h1 id="surahName">الأعلى</h1>
+<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+
+<div id="versesContainer"></div>
+
+<script src="quranData.js"></script>
+
+<script>
+
+const maxVersesPerPage = 10;
+let currentSurahIndex = 0;
+let currentPage = 0;
+let currentFontSize = 24;
+let pages = [];
+let totalPages = 0;
+
+const versesContainer = document.getElementById('versesContainer');
+const surahSelectButton = document.getElementById('surahSelectButton');
+const surahSelectOptions = document.getElementById('surahSelectOptions');
+const pageSelectButton = document.getElementById('pageSelectButton');
+const pageSelectOptions = document.getElementById('pageSelectOptions');
+
+let startX = 0, isDragging = false;
+const minSwipeDist = 85;
+
+function initSurahDropdown() {
+  surahSelectOptions.innerHTML = '';
+  quranData.surahs.forEach((surah, index) => {
+    const option = document.createElement('div');
+    option.style.padding = "8px 12px";
+    option.textContent = `${surah.number}. ${surah.name}`;
+    option.addEventListener('click', () => { 
+      loadSurah(index, 0, 'forward'); 
+      surahSelectOptions.style.display = 'none'; 
+    });
+    surahSelectOptions.appendChild(option);
+  });
+}
+
+function updateURL(surahNum, pageNum) {
+  const newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + `?surah=${surahNum}&page=${pageNum + 1}`;
+  window.history.replaceState({path: newurl}, '', newurl);
+}
+
+function loadSurah(surahIndex, pageIndex = 0, direction = 'none') {
+  currentSurahIndex = surahIndex;
+  const surah = quranData.surahs[surahIndex];
+  
+  document.getElementById('surahName').textContent = surah.name;
+  surahSelectButton.textContent = `${surah.number}. ${surah.name} ▼`;
+  
+  totalPages = Math.ceil(surah.verses.length / maxVersesPerPage);
+  pages = [];
+  for(let i = 0; i < totalPages; i++) pages.push(surah.verses.slice(i * maxVersesPerPage, (i + 1) * maxVersesPerPage));
+  initPageDropdown();
+  
+  const targetPage = pageIndex === 'last' ? totalPages - 1 : Math.min(pageIndex, totalPages - 1);
+  goToPage(targetPage, direction);
+}
+
+function initPageDropdown() {
+  pageSelectOptions.innerHTML = '';
+  for(let i = 0; i < totalPages; i++) {
+    const option = document.createElement('div');
+    option.style.padding = "8px 12px";
+    option.textContent = "Page " + (i + 1);
+    option.addEventListener('click', () => { 
+      const direction = i > currentPage ? 'forward' : 'backward';
+      goToPage(i, direction); 
+      pageSelectOptions.style.display = 'none'; 
+    });
+    pageSelectOptions.appendChild(option);
+  }
+}
+
+function displayVerses(pageIndex) {
+  versesContainer.innerHTML = "";
+  
+  const isMobile = window.innerWidth < 600;
+  const baseWidth = isMobile ? 250 : 400; 
+  const multiplier = isMobile ? 4 : 8; 
+  const calculatedWidth = baseWidth - (currentFontSize * multiplier);
+
+  pages[pageIndex].forEach((verse, idx) => {
+    const verseNum = pageIndex * maxVersesPerPage + idx + 1;
+    const verseDiv = document.createElement('div');
+    verseDiv.className = "verse";
+    verseDiv.style.fontSize = currentFontSize + "px";
+    
+    verseDiv.innerHTML = `
+      ${verse.arabic} <span class="verse-number" data-index="${verseNum}">[${verseNum}]</span>
+      <div class="popover" id="popover-${verseNum}" style="width: ${calculatedWidth}px">
+        <span class="popover-close">Close ×</span>
+        <div class="popover-content">${verse.translation}</div>
+      </div>
+    `;
+    versesContainer.appendChild(verseDiv);
+  });
+
+  document.querySelectorAll('.verse-number').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const num = el.dataset.index;
+      const pop = document.getElementById('popover-' + num);
+      
+      document.querySelectorAll('.popover').forEach(p => { if(p !== pop) p.style.display='none'; });
+      
+      pop.style.display = 'block';
+
+      const closeBtn = pop.querySelector('.popover-close');
+      closeBtn.onclick = (event) => {
+        event.stopPropagation();
+        pop.style.display = 'none';
+      };
+
+      const rect = el.getBoundingClientRect();
+      const popWidth = pop.offsetWidth;
+      const popHeight = pop.offsetHeight;
+      const margin = 10;
+      const offset = 2; // Very close - just 2px gap
+      
+      const viewportHeight = window.innerHeight;
+      const viewportWidth = window.innerWidth;
+      
+      // Get parent container position for relative positioning
+      const containerRect = versesContainer.getBoundingClientRect();
+      
+      // Calculate available space from verse number position on screen
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const spaceRight = viewportWidth - rect.right;
+      const spaceLeft = rect.left;
+      
+      let top, left;
+      
+      // Position based on which direction has most space
+      const maxSpace = Math.max(spaceBelow, spaceAbove, spaceRight, spaceLeft);
+      
+      if (maxSpace === spaceBelow) {
+        // Below - stay very close
+        top = el.offsetTop + el.offsetHeight + offset;
+        left = el.offsetLeft + (el.offsetWidth / 2) - (popWidth / 2);
+      } else if (maxSpace === spaceAbove) {
+        // Above - stay very close
+        top = el.offsetTop - popHeight - offset;
+        left = el.offsetLeft + (el.offsetWidth / 2) - (popWidth / 2);
+      } else if (maxSpace === spaceRight) {
+        // Right - stay very close
+        top = el.offsetTop + (el.offsetHeight / 2) - (popHeight / 2);
+        left = el.offsetLeft + el.offsetWidth + offset;
+      } else {
+        // Left - stay very close
+        top = el.offsetTop + (el.offsetHeight / 2) - (popHeight / 2);
+        left = el.offsetLeft - popWidth - offset;
+      }
+      
+      // Minimal horizontal adjustment only if absolutely necessary
+      const containerWidth = versesContainer.offsetWidth;
+      if (left < 0) left = 5;
+      if (left + popWidth > containerWidth) left = containerWidth - popWidth - 5;
+      
+      pop.style.top = top + "px";
+      pop.style.left = left + "px";
+    });
+  });
+}
+
+function goToPage(pageIndex, direction = 'none') {
+  if(pageIndex < 0) {
+    currentSurahIndex > 0 ? loadSurah(currentSurahIndex - 1, 'last', direction) : loadSurah(quranData.surahs.length - 1, 'last', direction);
+    return;
+  }
+  if(pageIndex >= totalPages) {
+    currentSurahIndex < quranData.surahs.length - 1 ? loadSurah(currentSurahIndex + 1, 0, direction) : loadSurah(0, 0, direction);
+    return;
+  }
+  
+  versesContainer.classList.remove('flipping-forward', 'flipping-backward');
+  void versesContainer.offsetWidth; 
+  if(direction === 'forward') versesContainer.classList.add('flipping-forward');
+  else if(direction === 'backward') versesContainer.classList.add('flipping-backward');
+
+  setTimeout(() => {
+    currentPage = pageIndex;
+    displayVerses(pageIndex);
+    updateProgressBar();
+    
+    pageSelectButton.textContent = "Page " + (currentPage + 1) + " ▼";
+    document.body.classList.toggle('not-first-page', currentPage !== 0);
+
+    updateURL(quranData.surahs[currentSurahIndex].number, currentPage);
+  }, direction === 'none' ? 0 : 110);
+}
+
+function updateProgressBar() {
+  document.getElementById('progressBar').style.width = ((currentPage + 1) / totalPages * 100) + "%";
+}
+
+function updateZoom(newSize) {
+  currentFontSize = newSize;
+  document.documentElement.style.setProperty('--current-font-size', currentFontSize);
+  displayVerses(currentPage);
+}
+
+document.getElementById('fontIncrease').onclick = () => { 
+  if(currentFontSize < 45) updateZoom(currentFontSize + 2); 
+};
+document.getElementById('fontDecrease').onclick = () => { 
+  if(currentFontSize > 14) updateZoom(currentFontSize - 2); 
+};
+
+document.addEventListener('keydown', (e) => {
+  const isPopoverOpen = !!document.querySelector('.popover[style*="display: block"]');
+  if (isPopoverOpen) return;
+
+  if (e.key === "ArrowRight") {
+    goToPage(currentPage - 1, 'backward');
+  } else if (e.key === "ArrowLeft") {
+    goToPage(currentPage + 1, 'forward');
+  }
+});
+
+function handleStart(e, x) { 
+  if (e.target.closest('.popover') || e.target.closest('#header')) { isDragging = false; return; }
+  startX = x; isDragging = true; 
+}
+function handleMove(x) {
+  if (!isDragging) return;
+  const diff = x - startX;
+  versesContainer.style.transform = `perspective(1000px) rotateY(${(diff / window.innerWidth) * -15}deg)`;
+}
+function handleEnd(x) {
+  if (!isDragging) return;
+  isDragging = false;
+  versesContainer.style.transform = '';
+  const diff = x - startX;
+  if (Math.abs(diff) > minSwipeDist) {
+    diff > 0 ? goToPage(currentPage + 1, 'forward') : goToPage(currentPage - 1, 'backward');
+  }
+}
+
+document.addEventListener('touchstart', e => handleStart(e, e.touches[0].clientX), {passive: true});
+document.addEventListener('touchmove', e => handleMove(e.touches[0].clientX), {passive: true});
+document.addEventListener('touchend', e => handleEnd(e.changedTouches[0].clientX));
+document.addEventListener('mousedown', e => handleStart(e, e.clientX));
+document.addEventListener('mousemove', e => handleMove(e.clientX));
+document.addEventListener('mouseup', e => handleEnd(e.clientX));
+
+document.getElementById('nextPage').onclick = () => goToPage(currentPage + 1, 'forward');
+document.getElementById('prevPage').onclick = () => goToPage(currentPage - 1, 'backward');
+surahSelectButton.onclick = (e) => { e.stopPropagation(); surahSelectOptions.style.display = 'block'; };
+pageSelectButton.onclick = (e) => { e.stopPropagation(); pageSelectOptions.style.display = 'block'; };
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.popover') && !e.target.closest('.verse-number')) {
+    document.querySelectorAll('.popover').forEach(p => p.style.display = 'none');
+  }
+  surahSelectOptions.style.display = 'none'; pageSelectOptions.style.display = 'none';
+});
+
+document.getElementById('themeBtn').onclick = () => {
+  document.body.classList.toggle('dark');
+  document.getElementById('themeBtn').textContent = document.body.classList.contains('dark') ? "☀️" : "🌙";
+};
+
+function initFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const surahNum = parseInt(params.get('surah'));
+  const pageNum = parseInt(params.get('page'));
+
+  let sIndex = 0;
+  let pIndex = 0;
+
+  if (!isNaN(surahNum)) {
+    const foundIndex = quranData.surahs.findIndex(s => s.number === surahNum);
+    if (foundIndex !== -1) sIndex = foundIndex;
+  }
+
+  if (!isNaN(pageNum)) {
+    pIndex = pageNum - 1;
+  }
+
+  initSurahDropdown();
+  loadSurah(sIndex, pIndex);
+  document.documentElement.style.setProperty('--current-font-size', currentFontSize);
+}
+
+initFromURL();
+
+</script>
+
+</body>
+</html>
