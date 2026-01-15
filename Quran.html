@@ -82,13 +82,31 @@
   body.dark .verse-number { color: #4ade80; }
 
   .popover {
-    display: none; position: absolute; background-color: #fff; color: #000;
-    border: 1px solid #aaa; border-radius: 12px; 
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 10001;
-    font-size: 17px; width: 280px; max-height: 250px; overflow-y: auto;   
-    text-align: left; line-height: 1.5; direction: ltr;
-    padding: 0;
-  }
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  z-index: 10001;
+  border: 1px solid #aaa;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  
+  /* THE FIX: */
+  /* If zoom is 20: 550 - (20 * 10) = 350px */
+  /* If zoom is 40: 550 - (40 * 10) = 150px (Much Narrower) */
+  /* width: calc(550px - (var(--current-font-size) * 10)); */
+
+  /* Safety constraints */
+  max-width: 90vw; 
+  min-width: 120px; 
+  
+  font-size: 16px;
+  line-height: 1.5;
+  direction: ltr;
+  text-align: left;
+  overflow-y: auto;
+  max-height: 250px;
+ }
+  
   body.dark .popover { background:#1e1e1e; color:#f0f0f0; border-color:#444; }
   
   .popover-close { 
@@ -177,7 +195,7 @@ const pageSelectButton = document.getElementById('pageSelectButton');
 const pageSelectOptions = document.getElementById('pageSelectOptions');
 
 let startX = 0, isDragging = false;
-const minSwipeDist = 100;
+const minSwipeDist = 100; // Minimum distance for swipe
 
 function initSurahDropdown() {
   surahSelectOptions.innerHTML = '';
@@ -232,17 +250,21 @@ function initPageDropdown() {
     pageSelectOptions.appendChild(option);
   }
 }
-
 function displayVerses(pageIndex) {
   versesContainer.innerHTML = "";
+  
+  // AGGRESSIVE WIDTH: Smaller as zoom (currentFontSize) gets bigger
+  const calculatedWidth = 700 - (currentFontSize * 14);
+
   pages[pageIndex].forEach((verse, idx) => {
     const verseNum = pageIndex * maxVersesPerPage + idx + 1;
     const verseDiv = document.createElement('div');
     verseDiv.className = "verse";
     verseDiv.style.fontSize = currentFontSize + "px";
+    
     verseDiv.innerHTML = `
       ${verse.arabic} <span class="verse-number" data-index="${verseNum}">[${verseNum}]</span>
-      <div class="popover" id="popover-${verseNum}">
+      <div class="popover" id="popover-${verseNum}" style="width: ${calculatedWidth}px">
         <span class="popover-close">Close ×</span>
         <div class="popover-content">${verse.translation}</div>
       </div>
@@ -280,7 +302,6 @@ function displayVerses(pageIndex) {
   });
 }
 
-
 function goToPage(pageIndex, direction = 'none') {
   // Boundary Logic (Infinite Loop)
   if(pageIndex < 0) {
@@ -312,10 +333,6 @@ function goToPage(pageIndex, direction = 'none') {
   }, direction === 'none' ? 0 : 110);
 }
 
-
-
-
-
 function updateProgressBar() {
   document.getElementById('progressBar').style.width = ((currentPage + 1) / totalPages * 100) + "%";
 }
@@ -331,6 +348,36 @@ window.addEventListener('wheel', (e) => {
   }
 });
 */
+
+function updateZoom(newSize) {
+  currentFontSize = newSize;
+  // This updates the CSS variable if you're still using it for other things
+  document.documentElement.style.setProperty('--current-font-size', currentFontSize);
+  // Re-run the display logic with the new calculations
+  displayVerses(currentPage);
+}
+
+document.getElementById('fontIncrease').onclick = () => { 
+  if(currentFontSize < 45) updateZoom(currentFontSize + 2); 
+};
+document.getElementById('fontDecrease').onclick = () => { 
+  if(currentFontSize > 14) updateZoom(currentFontSize - 2); 
+};
+
+// Attach to buttons
+document.getElementById('fontIncrease').onclick = () => { 
+  if(currentFontSize < 45) updateZoom(currentFontSize + 2); 
+};
+document.getElementById('fontDecrease').onclick = () => { 
+  if(currentFontSize > 14) updateZoom(currentFontSize - 2); 
+};
+// Attach to buttons
+document.getElementById('fontIncrease').onclick = () => { 
+  if(currentFontSize < 45) updateZoom(currentFontSize + 2); 
+};
+document.getElementById('fontDecrease').onclick = () => { 
+  if(currentFontSize > 14) updateZoom(currentFontSize - 2); 
+};
 
 // Keyboard Navigation
 document.addEventListener('keydown', (e) => {
@@ -417,6 +464,7 @@ function initFromURL() {
 
   initSurahDropdown();
   loadSurah(sIndex, pIndex);
+  document.documentElement.style.setProperty('--current-font-size', currentFontSize);
 }
 
 // Call this instead of the old loadSurah(0, 0)
@@ -426,4 +474,3 @@ initFromURL();
 
 </body>
 </html>
-
