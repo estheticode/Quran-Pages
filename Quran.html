@@ -204,7 +204,7 @@ const pageSelectButton = document.getElementById('pageSelectButton');
 const pageSelectOptions = document.getElementById('pageSelectOptions');
 
 let startX = 0, isDragging = false;
-const minSwipeDist = 100; // Minimum distance for swipe
+const minSwipeDist = 85; // Minimum distance for swipe
 
 function initSurahDropdown() {
   surahSelectOptions.innerHTML = '';
@@ -266,8 +266,8 @@ function displayVerses(pageIndex) {
   const isMobile = window.innerWidth < 600;
 
   // REDUCED DEFAULT WIDTH
-  // We start at 400 (Desktop) or 200 (Mobile) instead of 700
-  const baseWidth = isMobile ? 200 : 400; 
+  // We start at 400 (Desktop) or 250 (Mobile) instead of 700
+  const baseWidth = isMobile ? 250 : 400; 
   const multiplier = isMobile ? 4 : 8; 
 
   // New calculation: much narrower by default
