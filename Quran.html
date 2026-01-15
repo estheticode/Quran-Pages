@@ -85,27 +85,31 @@
   display: none;
   position: absolute;
   background-color: #fff;
-  z-index: 10001;
   border: 1px solid #aaa;
   border-radius: 12px;
+  z-index: 10001;
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
   
-  /* THE FIX: */
-  /* If zoom is 20: 550 - (20 * 10) = 350px */
-  /* If zoom is 40: 550 - (40 * 10) = 150px (Much Narrower) */
-  /* width: calc(550px - (var(--current-font-size) * 10)); */
-
-  /* Safety constraints */
-  max-width: 90vw; 
-  min-width: 120px; 
+  /* SAFETY LIMITS FOR PHONE */
+  max-width: 40vw;   /* Never wider than 80% of the phone screen */
+  min-width: 120px;  /* Never thinner than 120px */
   
+  font-size: 15px;   /* Slightly smaller text for mobile readability */
+  line-height: 1.4;
+
   font-size: 16px;
-  line-height: 1.5;
   direction: ltr;
   text-align: left;
   overflow-y: auto;
   max-height: 250px;
+
  }
+
+/* Adjust padding for mobile so text isn't cramped */
+.popover-content {
+  padding: 10px;
+  word-wrap: break-word; /* Prevents long words from breaking the layout */
+  }
   
   body.dark .popover { background:#1e1e1e; color:#f0f0f0; border-color:#444; }
   
@@ -255,11 +259,19 @@ function initPageDropdown() {
     pageSelectOptions.appendChild(option);
   }
 }
+
 function displayVerses(pageIndex) {
   versesContainer.innerHTML = "";
   
-  // AGGRESSIVE WIDTH: Smaller as zoom (currentFontSize) gets bigger
-  const calculatedWidth = 700 - (currentFontSize * 14);
+  const isMobile = window.innerWidth < 600;
+
+  // REDUCED DEFAULT WIDTH
+  // We start at 400 (Desktop) or 200 (Mobile) instead of 700
+  const baseWidth = isMobile ? 200 : 400; 
+  const multiplier = isMobile ? 4 : 8; 
+
+  // New calculation: much narrower by default
+  const calculatedWidth = baseWidth - (currentFontSize * multiplier);
 
   pages[pageIndex].forEach((verse, idx) => {
     const verseNum = pageIndex * maxVersesPerPage + idx + 1;
