@@ -259,36 +259,35 @@
   /* Mobile top safe space */
   
   #tgTopSpacer { display: none; }
+  @media (max-width: 768px) {
+    body.is-telegram #tgTopSpacer {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: calc(80px + env(safe-area-inset-top));
+      background: #F4E4C1; /* light mode */
+      z-index: 9998;
+      pointer-events: none;
+    }
 
-@media (max-width: 768px) {
-  body.is-telegram #tgTopSpacer {
-    display: block;
-    position: fixed;
-    top: 24px;
-    left: 0;
-    width: 100%;
-    height: calc(20px + env(safe-area-inset-top));
-    background: #F4E4C1; /* light mode */
-    z-index: 9998;
-    pointer-events: none;
-  }
+    body.dark.is-telegram #tgTopSpacer {
+      background: #121212;
+    }
 
-  body.dark.is-telegram #tgTopSpacer {
-    background: #121212;
-  }
+    body.is-telegram {
+      padding-top: 230px;
+    }
 
-  body.is-telegram {
-    padding-top: 160px;
-  }
+    body.is-telegram #progressBarContainer {
+      top: calc(80px + env(safe-area-inset-top));
+    }
 
-  body.is-telegram #progressBarContainer {
-    top: calc(20px + env(safe-area-inset-top));
+    body.is-telegram #header {
+      top: calc(86px + env(safe-area-inset-top));
+    }
   }
-
-  body.is-telegram #header {
-    top: calc(26px + env(safe-area-inset-top));
-  }
-}
 
 
 </style>
