@@ -17,24 +17,14 @@
   }
 </script>
 <style>
-  html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  }
-
   body {
     font-family: 'Arial', sans-serif;
     background: #F4E4C1;
     color: #000;
-    padding-top: calc(110px + env(safe-area-inset-top));
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 20px;
+    padding: 120px 20px 20px 20px;
     text-align: center;
     direction: rtl;
-    width: 100%;
-    max-width: none;  
+    max-width: 1000px;  
     margin: 0 auto;      
     box-sizing: border-box;
     overflow-x: hidden; 
@@ -51,9 +41,9 @@
 
   #header {
     position: fixed; top: 6px; left: 0; right: 0;
-    margin: 0 auto; width: 100%; width: 100%;
+    margin: 0 auto; width: 100%; max-width: 1000px;
     padding: 10px 20px; background: #F4E4C1; z-index: 1000;
-    display: flex; justify-content: center; align-items: flex-start; gap: 400px;
+    display: flex; justify-content: space-between; align-items: flex-start;
     box-sizing: border-box; direction: ltr;
   }
   body.dark #header { background: #121212; }
@@ -62,6 +52,7 @@
   #leftSide { align-items: flex-start; }
   #rightSide { align-items: flex-end; }
   
+  #navButtons, #buttonsContainer { display: flex; gap: 6px; }
 
   /* UNIFIED BUTTON STYLES (Navigation & Dropdowns) */
   #navButtons button, 
@@ -82,17 +73,11 @@
 
     color: #000;
     height: 38px;
-    top:6px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
   }
-  #buttonsContainer button {
-    font-weight: bold;
-    }
-  #navButtons, #buttonsContainer { display: flex; gap: 6px; }
-
 
   /* DARK MODE UNIFIED BUTTONS */
   body.dark #navButtons button, 
@@ -144,17 +129,12 @@
   .dropdown-options::-webkit-scrollbar { width: 8px; }
   .dropdown-options::-webkit-scrollbar-track { background: transparent; }
   .dropdown-options::-webkit-scrollbar-thumb { background-color: green; border-radius: 8px; }
-  body.dark .dropdown-options::-webkit-scrollbar-thumb { background-color: #4ade80; }
+  body.dark .dropdown-options::-webkit-scrollbar-thumb { background-color: green; }
 
   h1#surahName { font-size: 40px; margin: 5px 0; }
   .bismillah { font-size: 26px; font-weight: bold; color: #555; margin: 5px 0 20px 0; }
   body.dark .bismillah { color:#ccc; }
-  #surahName, .bismillah { display: block; }
-  
   body.not-first-page #surahName, body.not-first-page .bismillah { display: none; }
-  /* body.not-first-page .bismillah { display: none; } */
-
-  
 
   #versesContainer { 
     max-width: 100%; margin: 0 auto; line-height: 2;
@@ -166,7 +146,7 @@
 
   .verse { font-size: 24px; margin: 12px 0; display: inline; position: relative; }
   .verse-number { color: green; font-weight: bold; margin-left: 8px; cursor: pointer; display: inline-block; }
-  body.dark .verse-number { color: #4ade80; }
+  body.dark .verse-number { color: green; }
 
   /* TRANSLATION POPOVER (Glass Effect) */
 .popover {
@@ -259,10 +239,10 @@
 
     /* Dark mode tweak */
     body.dark .popover-body::-webkit-scrollbar-thumb {
-    background-color: #4ade80;
+    background-color: green;
     }
 
-    body.dark .close-popover { color: #4ade80 !important; }
+    body.dark .close-popover { color: green !important; }
 
   @keyframes flipFastLeft { 
     0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
@@ -282,56 +262,123 @@
     h1#surahName { font-size: 32px; }
     .verse { font-size: 20px; }
     .popover { max-width: 280px; }
+    
+    body {
+      padding-top: calc(130px + env(safe-area-inset-top));
+    }
+    
+    #header {
+      padding: 8px 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    #leftSide, #rightSide {
+      width: 100%;
+      align-items: stretch;
+    }
+    
+    #navButtons button, 
+    #buttonsContainer button, 
+    .dropdown-button {
+      padding: 4px 10px;
+      font-size: 14px;
+      height: 34px;
+      min-width: auto;
+    }
+    
+    .dropdown-button {
+      min-width: 100px;
+      font-size: 13px;
+    }
+    
+    #leftSide, #rightSide {
+      gap: 6px;
+    }
+    
+    #navButtons, #buttonsContainer {
+      gap: 4px;
+      justify-content: flex-end;
+    }
+    
+    #fontDecrease, #fontIncrease { 
+      min-width: 38px; 
+    }
+  }
+
+  @media (min-width: 501px) {
+    #header {
+      gap: 400px;
+      justify-content: center;
+    }
   }
 
   #fontDecrease, #fontIncrease { min-width: 45px; text-align: center; }
 
+  /* Telegram Mini App Controls */
   #tgTopControls {
-  position: fixed;
-  top: env(safe-area-inset-top);
-  left: 0;
-  right: 0;
-  height: 32px;
-  z-index: 10001;
-  pointer-events: none;
+    position: fixed;
+    top: 10px;
+    left: 0;
+    right: 0;
+    height: 32px;
+    z-index: 10001;
+    pointer-events: none;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
   }
 
   #tgClose,
   #tgMinimize {
     pointer-events: auto;
-    position: absolute;
-    top: 4px;
     width: 32px;
-    height: 28px;
+    height: 32px;
     border-radius: 8px;
     border: none;
     background: rgba(164, 181, 134, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     font-size: 20px;
     line-height: 1;
     font-weight: bold;
+    cursor: pointer;
+    color: #000;
   }
-
-  #tgClose { top: 12px; left: 12px; }
-  #tgMinimize { top: 12px; right: 12px; }
 
   body.dark #tgClose,
   body.dark #tgMinimize {
     background: rgba(51, 51, 51, 0.6);
+  }
+  
+  #tgClose {
     color: #ff0000;
   }
-  body.dark #tgMinimize  {
-    color: #4ADE80;
+  
+  #tgMinimize {
+    color: green;
   }
 
+  body.dark #tgClose {
+    color: #ff5555;
+  }
+
+  body.dark #tgMinimize {
+    color: green;
+  }
 </style>
 </head>
 <body>
 
 <div id="progressBarContainer"><div id="progressBar"></div></div>
+
 <div id="tgTopControls">
+  <button id="tgMinimize">−</button>
   <button id="tgClose">✕</button>
-  <button id="tgMinimize">—</button>
 </div>
+
 <div id="header">
   <div id="leftSide">
     <div class="dropdown-container">
@@ -601,19 +648,22 @@ function initFromURL() {
 
 initFromURL();
 
+// Telegram Mini App Controls
+if (window.Telegram && Telegram.WebApp) {
+  document.getElementById('tgClose').onclick = () => {
+    Telegram.WebApp.close();
+  };
+
+  document.getElementById('tgMinimize').onclick = () => {
+    Telegram.WebApp.expand();
+  };
+
+  // Re-expand on viewport changes
   Telegram.WebApp.onEvent('viewportChanged', () => {
     Telegram.WebApp.expand();
   });
-  if (window.Telegram && Telegram.WebApp) {
-    document.getElementById('tgClose').onclick = () => {
-      Telegram.WebApp.close();
-    };
+}
 
-    document.getElementById('tgMinimize').onclick = () => {
-      Telegram.WebApp.expand(); // Telegram has NO true minimize
-    };
-  }
-  window.addEventListener('load', () => tg.expand());
 </script>
 </body>
 </html>
