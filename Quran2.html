@@ -277,7 +277,7 @@
     }
 
     body.is-telegram {
-      padding-top: 230px;
+      padding-top: max(230px, calc(20vh + 100px + env(safe-area-inset-top)));
     }
 
     body.is-telegram #progressBarContainer {
@@ -286,6 +286,13 @@
 
     body.is-telegram #header {
       top: calc(86px + env(safe-area-inset-top));
+    }
+  }
+  
+  /* Extra adjustment for very small screens */
+  @media (max-width: 768px) and (max-height: 700px) {
+    body {
+      padding-top: max(250px, calc(25vh + 80px + env(safe-area-inset-top)));
     }
   }
 
