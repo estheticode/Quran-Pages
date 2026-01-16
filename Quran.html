@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>القرآن الكريم</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   body {
@@ -13,7 +14,6 @@
     padding: 120px 20px 20px 20px;
     text-align: center;
     direction: rtl;
-    transition: background 0.3s, color 0.3s;
     max-width: 1000px;  
     margin: 0 auto;      
     box-sizing: border-box;
@@ -42,26 +42,86 @@
   #leftSide { align-items: flex-start; }
   #rightSide { align-items: flex-end; }
   
-  #navButtons, #buttonsContainer { display: flex; gap: 10px; }
-  #navButtons button, #buttonsContainer button {
-    padding: 6px 12px; font-size: 18px; border: none; border-radius: 6px;
-    cursor: pointer; background: #e0e0e0; color: #000;
+  #navButtons, #buttonsContainer { display: flex; gap: 6px; }
+
+  /* UNIFIED BUTTON STYLES (Navigation & Dropdowns) */
+  #navButtons button, 
+  #buttonsContainer button, 
+  .dropdown-button {
+    background: rgba(164, 181, 134, 0.3); /* semi-transparent #B5C697 */
+    color: #000; /* text color */
+    backdrop-filter: blur(10px); /* frosted glass blur */
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    border: 1px solid rgba(181, 198, 151, 0.4); /* subtle border */
+
+    padding: 6px 14px;
+    font-size: 16px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    
+
+    color: #000;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
   }
-  body.dark #navButtons button, body.dark #buttonsContainer button { background: #333; color: #f0f0f0; }
+  #buttonsContainer button { font-weight: bold; }
+
+  /* DARK MODE UNIFIED BUTTONS */
+  body.dark #navButtons button, 
+  body.dark #buttonsContainer button, 
+  body.dark .dropdown-button { 
+      background: rgba(51, 51, 51, 0.6); /* semi-transparent dark */
+      color: #f0f0f0; 
+      backdrop-filter: blur(10px); /* frosted glass blur */
+      -webkit-backdrop-filter: blur(10px); /* Safari support */
+  }
+  body.dark #buttonsContainer button { font-weight: bold; }
 
   .dropdown-container { position: relative; display: inline-block; }
-  .dropdown-button {
-    padding: 6px 12px; font-size: 16px; border-radius: 6px;
-    border: 1px solid #aaa; background: #fff; min-width: 120px;
-  }
-  body.dark .dropdown-button { background:#222; color:#f0f0f0; border-color:#555; }
+  .dropdown-button { min-width: 120px; }
 
   .dropdown-options {
-    position: fixed; background: #fff; border: 1px solid #aaa;
-    border-radius: 6px; max-height: 300px; overflow-y: auto;
-    z-index: 10000; display: none; min-width: 150px;
+    position: fixed;
+    /* background: #fff; */
+    background: rgba(164, 181, 134, 0.3); /* semi-transparent #B5C697 */
+    backdrop-filter: blur(10px); /* frosted glass blur */
+    border: 1px solid #aaa;
+    border-radius: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 10000;
+    display: none;
+    min-width: 150px;
+    padding: 6px 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
-  body.dark .dropdown-options { background:#222; color:#f0f0f0; }
+  /* DARK MODE DROPDOWN OPTIONS */
+  body.dark .dropdown-options { 
+      background: rgba(34, 34, 34, 0.6); /* semi-transparent dark */
+      color: #f0f0f0;
+      backdrop-filter: blur(10px); 
+      -webkit-backdrop-filter: blur(10px);
+  }
+
+  .dropdown-options > div {
+    margin: 2px 8px;
+    cursor: pointer;
+    padding: 6px 10px;
+    background: transparent;
+  }
+
+  .dropdown-options > div:hover { background: #f0f0f0; }
+  body.dark .dropdown-options > div:hover { background: #2a2a2a; }
+
+  /* Scrollbar Styling */
+  .dropdown-options::-webkit-scrollbar { width: 8px; }
+  .dropdown-options::-webkit-scrollbar-track { background: transparent; }
+  .dropdown-options::-webkit-scrollbar-thumb { background-color: green; border-radius: 8px; }
+  body.dark .dropdown-options::-webkit-scrollbar-thumb { background-color: #4ade80; }
 
   h1#surahName { font-size: 40px; margin: 5px 0; }
   .bismillah { font-size: 26px; font-weight: bold; color: #555; margin: 5px 0 20px 0; }
@@ -74,57 +134,107 @@
     will-change: transform, opacity, filter;
     transform-origin: center;
     user-select: none; 
-    transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .verse { font-size: 24px; margin: 12px 0; display: inline; position: relative; }
   .verse-number { color: green; font-weight: bold; margin-left: 8px; cursor: pointer; display: inline-block; }
   body.dark .verse-number { color: #4ade80; }
 
-  .popover {
-  display: none;
-  position: absolute;
-  background-color: #fff;
-  border: 1px solid #aaa;
-  border-radius: 12px;
-  z-index: 10001;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-  
-  /* SAFETY LIMITS FOR PHONE */
-  max-width: 40vw;   /* Never wider than 80% of the phone screen */
-  min-width: 120px;  /* Never thinner than 120px */
-  
-  font-size: 15px;   /* Slightly smaller text for mobile readability */
-  line-height: 1.4;
+  /* TRANSLATION POPOVER (Glass Effect) */
+.popover {
+    max-width: 400px;
+    text-align: left;
+    background: rgba(244, 228, 193, 0.5); /* semi-transparent light */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 16px;
+    color: #000;
+}
 
-  font-size: 16px;
-  direction: ltr;
-  text-align: left;
-  overflow-y: auto;
-  max-height: 250px;
+.popover-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background: rgba(244, 228, 193, 0.4) !important; /* semi-transparent header */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    color: #000;
+    padding: 8px 12px;
+}
 
- }
+.popover-body {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    background: transparent;
+    padding: 12px;
+    color: #000;
+}
 
-/* Adjust padding for mobile so text isn't cramped */
-.popover-content {
-  padding: 10px;
-  word-wrap: break-word; /* Prevents long words from breaking the layout */
+  /* DARK MODE POPOVER GLASS EFFECT */
+  body.dark .popover {
+      background: rgba(18, 18, 18, 0.4); /* semi-transparent dark */
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #f0f0f0;
   }
-  
-  body.dark .popover { background:#1e1e1e; color:#f0f0f0; border-color:#444; }
-  
-  .popover-close { 
-    display: block; text-align: right; font-size: 14px; color: green; 
-    cursor: pointer; font-weight: bold;
-    position: sticky; top: 0; 
-    background: inherit; 
-    padding: 10px 15px 5px 15px;
-    z-index: 2;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-  }
-  body.dark .popover-close { color: #4ade80; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-  .popover-content { padding: 5px 15px 15px 15px; }
+  body.dark .popover-header {
+      background: rgba(18, 18, 18, 0.3) !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #f0f0f0;
+      border-bottom: 1px solid #fff;
+  }
+
+  body.dark .popover-body {
+      background: transparent;
+      color: #f0f0f0;
+  }
+
+  
+  .close-popover {
+    cursor: pointer !important;
+    float: right !important;
+    font-weight: bold !important;
+    color: green !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    margin-left: 10px !important;
+  }
+
+  /* Green scrollbar for popover body */
+    .popover-body::-webkit-scrollbar {
+    width: 8px;
+    }
+
+    .popover-body::-webkit-scrollbar-track {
+    background: transparent;
+    }
+
+    .popover-body::-webkit-scrollbar-thumb {
+    background-color: green;
+    border-radius: 8px;
+    }
+
+    .popover-body::-webkit-scrollbar-thumb:hover {
+    background-color: #0f9d58;
+    }
+
+    /* Firefox */
+    .popover-body {
+    scrollbar-width: thin;
+    scrollbar-color: green transparent;
+    }
+
+    /* Dark mode tweak */
+    body.dark .popover-body::-webkit-scrollbar-thumb {
+    background-color: #4ade80;
+    }
+
+    body.dark .close-popover { color: #4ade80 !important; }
 
   @keyframes flipFastLeft { 
     0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
@@ -143,13 +253,10 @@
   @media (max-width: 500px) {
     h1#surahName { font-size: 32px; }
     .verse { font-size: 20px; }
-    .popover { 
-        width: 160px; font-size: 15px;
-        max-width: 70vw;   /* smaller on mobile */
-        min-width: 80px;   /* allow narrower */
-    
-    }
+    .popover { max-width: 280px; }
   }
+
+  #fontDecrease, #fontIncrease { min-width: 45px; text-align: center; }
 </style>
 </head>
 <body>
@@ -186,16 +293,17 @@
 
 <div id="versesContainer"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="quranData.js"></script>
 
 <script>
-
-const maxVersesPerPage = 10; // Smaller number to test page shifts easily
+const maxVersesPerPage = 10;
 let currentSurahIndex = 0;
 let currentPage = 0;
 let currentFontSize = 24;
 let pages = [];
 let totalPages = 0;
+let activePopover = null;
 
 const versesContainer = document.getElementById('versesContainer');
 const surahSelectButton = document.getElementById('surahSelectButton');
@@ -204,7 +312,7 @@ const pageSelectButton = document.getElementById('pageSelectButton');
 const pageSelectOptions = document.getElementById('pageSelectOptions');
 
 let startX = 0, isDragging = false;
-const minSwipeDist = 85; // Minimum distance for swipe
+const minSwipeDist = 85;
 
 function initSurahDropdown() {
   surahSelectOptions.innerHTML = '';
@@ -213,7 +321,6 @@ function initSurahDropdown() {
     option.style.padding = "8px 12px";
     option.textContent = `${surah.number}. ${surah.name}`;
     option.addEventListener('click', () => { 
-      // Added 'forward' direction here
       loadSurah(index, 0, 'forward'); 
       surahSelectOptions.style.display = 'none'; 
     });
@@ -221,7 +328,6 @@ function initSurahDropdown() {
   });
 }
 
-// Function to update the URL parameters
 function updateURL(surahNum, pageNum) {
   const newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + `?surah=${surahNum}&page=${pageNum + 1}`;
   window.history.replaceState({path: newurl}, '', newurl);
@@ -230,17 +336,12 @@ function updateURL(surahNum, pageNum) {
 function loadSurah(surahIndex, pageIndex = 0, direction = 'none') {
   currentSurahIndex = surahIndex;
   const surah = quranData.surahs[surahIndex];
-  
-  // UI Updates
   document.getElementById('surahName').textContent = surah.name;
   surahSelectButton.textContent = `${surah.number}. ${surah.name} ▼`;
-  
-  // Pagination Logic
   totalPages = Math.ceil(surah.verses.length / maxVersesPerPage);
   pages = [];
   for(let i = 0; i < totalPages; i++) pages.push(surah.verses.slice(i * maxVersesPerPage, (i + 1) * maxVersesPerPage));
   initPageDropdown();
-  
   const targetPage = pageIndex === 'last' ? totalPages - 1 : Math.min(pageIndex, totalPages - 1);
   goToPage(targetPage, direction);
 }
@@ -263,64 +364,93 @@ function initPageDropdown() {
 function displayVerses(pageIndex) {
   versesContainer.innerHTML = "";
   
-  const isMobile = window.innerWidth < 600;
+  const currentSurah = quranData.surahs[currentSurahIndex];
+  // Prioritize surah-specific direction, fallback to global setting
+  const transDir = currentSurah.translation_dir || quranData.translation_dir || 'ltr';
+  
+  // --- FONT CALCULATION ---
+  const defaultArabicSize = 24;
+  const isMobile = window.innerWidth < 500;
+  
+  // Higher default base for mobile (18px) vs desktop (15px)
+  const defaultPopoverSize = isMobile ? 18 : 15; 
+  let popoverFontSize = defaultPopoverSize;
 
-  // REDUCED DEFAULT WIDTH
-  // We start at 400 (Desktop) or 250 (Mobile) instead of 700
-  const baseWidth = isMobile ? 250 : 400; 
-  const multiplier = isMobile ? 4 : 8; 
-
-  // New calculation: much narrower by default
-  const calculatedWidth = baseWidth - (currentFontSize * multiplier);
+  // Scale translation font up if user scales Arabic font via (+)
+  if (currentFontSize > defaultArabicSize) {
+    popoverFontSize = defaultPopoverSize + (currentFontSize - defaultArabicSize);
+  }
+  popoverFontSize = Math.max(defaultPopoverSize, Math.min(40, popoverFontSize));
 
   pages[pageIndex].forEach((verse, idx) => {
-    const verseNum = pageIndex * maxVersesPerPage + idx + 1;
+    // Get actual verse number
+    const verseNum = verse.number || (pageIndex * maxVersesPerPage + idx + 1);
     const verseDiv = document.createElement('div');
     verseDiv.className = "verse";
     verseDiv.style.fontSize = currentFontSize + "px";
     
-    verseDiv.innerHTML = `
-      ${verse.arabic} <span class="verse-number" data-index="${verseNum}">[${verseNum}]</span>
-      <div class="popover" id="popover-${verseNum}" style="width: ${calculatedWidth}px">
-        <span class="popover-close">Close ×</span>
-        <div class="popover-content">${verse.translation}</div>
-      </div>
-    `;
+    // 1. Escape single and double quotes to prevent breaking the HTML attribute logic
+    const safeTranslation = verse.translation
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;'); 
+    
+    // 2. Wrap in a styled span. 
+    // We use single quotes for the inline style to stay safe inside the data-bs-content double quotes.
+    const styledTranslation = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: ${transDir};'>${safeTranslation}</span>`;
+    
+    // 3. Render the verse and the popover trigger
+    // Using double quotes for data-bs-content to allow the single quotes inside styledTranslation
+    verseDiv.innerHTML = `${verse.arabic} <span class="verse-number" 
+        data-bs-toggle="popover" 
+        data-bs-trigger="click" 
+        data-bs-placement="auto" 
+        data-bs-content="${styledTranslation}" 
+        data-index="${verseNum}">[${verseNum}]</span>`;
+
     versesContainer.appendChild(verseDiv);
   });
 
-  document.querySelectorAll('.verse-number').forEach(el => {
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const num = el.dataset.index;
-      const pop = document.getElementById('popover-' + num);
+  // Initialize Bootstrap popovers
+  document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+    const popover = new bootstrap.Popover(el, {
+      html: true,
+      sanitize: false, // Vital: allows the style attribute in our span
+      container: 'body',
+      template: `
+        <div class="popover" role="tooltip" style="direction: ${transDir}; text-align: ${transDir === 'rtl' ? 'right' : 'left'};">
+          <div class="popover-arrow"></div>
+          <h3 class="popover-header" style="padding: 8px 12px;">
+            <span class="close-popover" style="float: ${transDir === 'rtl' ? 'left' : 'right'} !important; cursor: pointer;">×</span>
+            <span style="font-size: 13px; font-weight: bold; opacity: 0.7;">Translation</span>
+          </h3>
+          <div class="popover-body" style="direction: ${transDir}; padding: 12px;"></div>
+        </div>`
+    });
+    
+    el.addEventListener('shown.bs.popover', function () {
+      // Close any other open popovers
+      if (activePopover && activePopover !== popover) {
+        activePopover.hide();
+      }
+      activePopover = popover;
       
-      // Close all other popovers first
-      document.querySelectorAll('.popover').forEach(p => { if(p !== pop) p.style.display='none'; });
-      
-      pop.style.display = 'block';
-
-      // --- ADDED LOGIC FOR CLOSE BUTTON ---
-      const closeBtn = pop.querySelector('.popover-close');
-      closeBtn.onclick = (event) => {
-        event.stopPropagation(); // Prevent triggering other clicks
-        pop.style.display = 'none';
-      };
-      // ------------------------------------
-
-      const rect = el.getBoundingClientRect();
-      pop.style.top = (el.offsetTop + rect.height + 5) + "px";
-      let leftPos = el.offsetLeft + (rect.width / 2) - (pop.offsetWidth / 2);
-      const margin = 15;
-      if (leftPos < margin) leftPos = margin;
-      else if (leftPos + pop.offsetWidth > window.innerWidth - margin) leftPos = window.innerWidth - pop.offsetWidth - margin;
-      pop.style.left = leftPos + "px";
+      // Handle the custom "X" close button
+      setTimeout(() => {
+        const closeBtn = document.querySelector('.popover.show .close-popover');
+        if (closeBtn) {
+          closeBtn.onclick = (e) => {
+            e.stopPropagation();
+            popover.hide();
+            activePopover = null;
+          };
+        }
+      }, 50);
     });
   });
 }
 
 function goToPage(pageIndex, direction = 'none') {
-  // Boundary Logic (Infinite Loop)
+  if (activePopover) { activePopover.hide(); activePopover = null; }
   if(pageIndex < 0) {
     currentSurahIndex > 0 ? loadSurah(currentSurahIndex - 1, 'last', direction) : loadSurah(quranData.surahs.length - 1, 'last', direction);
     return;
@@ -329,23 +459,16 @@ function goToPage(pageIndex, direction = 'none') {
     currentSurahIndex < quranData.surahs.length - 1 ? loadSurah(currentSurahIndex + 1, 0, direction) : loadSurah(0, 0, direction);
     return;
   }
-  
-  // Animation
   versesContainer.classList.remove('flipping-forward', 'flipping-backward');
   void versesContainer.offsetWidth; 
   if(direction === 'forward') versesContainer.classList.add('flipping-forward');
   else if(direction === 'backward') versesContainer.classList.add('flipping-backward');
-
   setTimeout(() => {
     currentPage = pageIndex;
     displayVerses(pageIndex);
     updateProgressBar();
-    
-    // UI Update
     pageSelectButton.textContent = "Page " + (currentPage + 1) + " ▼";
     document.body.classList.toggle('not-first-page', currentPage !== 0);
-
-    // NEW: Update the URL every time the page changes
     updateURL(quranData.surahs[currentSurahIndex].number, currentPage);
   }, direction === 'none' ? 0 : 110);
 }
@@ -353,81 +476,26 @@ function goToPage(pageIndex, direction = 'none') {
 function updateProgressBar() {
   document.getElementById('progressBar').style.width = ((currentPage + 1) / totalPages * 100) + "%";
 }
-/*
-let lastScrollTime = 0;
-window.addEventListener('wheel', (e) => {
-  if (e.target.closest('.popover')) return;
-  const now = Date.now();
-  if (now - lastScrollTime < 500) return;
-  if (Math.abs(e.deltaY) > 20) {
-    lastScrollTime = now;
-    e.deltaY > 0 ? goToPage(currentPage + 1, 'forward') : goToPage(currentPage - 1, 'backward');
-  }
-});
-*/
 
 function updateZoom(newSize) {
+  if (activePopover) { activePopover.hide(); activePopover = null; }
   currentFontSize = newSize;
-  // This updates the CSS variable if you're still using it for other things
   document.documentElement.style.setProperty('--current-font-size', currentFontSize);
-  // Re-run the display logic with the new calculations
   displayVerses(currentPage);
 }
 
-document.getElementById('fontIncrease').onclick = () => { 
-  if(currentFontSize < 45) updateZoom(currentFontSize + 2); 
-};
-document.getElementById('fontDecrease').onclick = () => { 
-  if(currentFontSize > 14) updateZoom(currentFontSize - 2); 
-};
+document.getElementById('fontIncrease').onclick = () => { if(currentFontSize < 45) updateZoom(currentFontSize + 2); };
+document.getElementById('fontDecrease').onclick = () => { if(currentFontSize > 14) updateZoom(currentFontSize - 2); };
 
-// Attach to buttons
-document.getElementById('fontIncrease').onclick = () => { 
-  if(currentFontSize < 45) updateZoom(currentFontSize + 2); 
-};
-document.getElementById('fontDecrease').onclick = () => { 
-  if(currentFontSize > 14) updateZoom(currentFontSize - 2); 
-};
-// Attach to buttons
-document.getElementById('fontIncrease').onclick = () => { 
-  if(currentFontSize < 45) updateZoom(currentFontSize + 2); 
-};
-document.getElementById('fontDecrease').onclick = () => { 
-  if(currentFontSize > 14) updateZoom(currentFontSize - 2); 
-};
-
-// Keyboard Navigation
 document.addEventListener('keydown', (e) => {
-  // If a popover is open, we might want to let the user scroll it with arrows, 
-  // so we check if any popover is currently visible.
-  const isPopoverOpen = !!document.querySelector('.popover[style*="display: block"]');
-  if (isPopoverOpen) return;
-
-  if (e.key === "ArrowRight") {
-    goToPage(currentPage - 1, 'backward');
-  } else if (e.key === "ArrowLeft") {
-    goToPage(currentPage + 1, 'forward');
-  }
+  if (!!document.querySelector('.popover.show')) return;
+  if (e.key === "ArrowRight") goToPage(currentPage - 1, 'backward');
+  else if (e.key === "ArrowLeft") goToPage(currentPage + 1, 'forward');
 });
 
-function handleStart(e, x) { 
-  if (e.target.closest('.popover') || e.target.closest('#header')) { isDragging = false; return; }
-  startX = x; isDragging = true; 
-}
-function handleMove(x) {
-  if (!isDragging) return;
-  const diff = x - startX;
-  versesContainer.style.transform = `perspective(1000px) rotateY(${(diff / window.innerWidth) * -15}deg)`;
-}
-function handleEnd(x) {
-  if (!isDragging) return;
-  isDragging = false;
-  versesContainer.style.transform = '';
-  const diff = x - startX;
-  if (Math.abs(diff) > minSwipeDist) {
-    diff > 0 ? goToPage(currentPage + 1, 'forward') : goToPage(currentPage - 1, 'backward');
-  }
-}
+function handleStart(e, x) { if (e.target.closest('.popover') || e.target.closest('#header')) { isDragging = false; return; } startX = x; isDragging = true; }
+function handleMove(x) { if (!isDragging) return; const diff = x - startX; versesContainer.style.transform = `perspective(1000px) rotateY(${(diff / window.innerWidth) * -15}deg)`; }
+function handleEnd(x) { if (!isDragging) return; isDragging = false; versesContainer.style.transform = ''; const diff = x - startX; if (Math.abs(diff) > minSwipeDist) { diff > 0 ? goToPage(currentPage + 1, 'forward') : goToPage(currentPage - 1, 'backward'); } }
 
 document.addEventListener('touchstart', e => handleStart(e, e.touches[0].clientX), {passive: true});
 document.addEventListener('touchmove', e => handleMove(e.touches[0].clientX), {passive: true});
@@ -438,13 +506,12 @@ document.addEventListener('mouseup', e => handleEnd(e.clientX));
 
 document.getElementById('nextPage').onclick = () => goToPage(currentPage + 1, 'forward');
 document.getElementById('prevPage').onclick = () => goToPage(currentPage - 1, 'backward');
-surahSelectButton.onclick = (e) => { e.stopPropagation(); surahSelectOptions.style.display = 'block'; };
-pageSelectButton.onclick = (e) => { e.stopPropagation(); pageSelectOptions.style.display = 'block'; };
+
+surahSelectButton.onclick = (e) => { e.stopPropagation(); pageSelectOptions.style.display = 'none'; surahSelectOptions.style.display = surahSelectOptions.style.display === 'block' ? 'none' : 'block'; };
+pageSelectButton.onclick = (e) => { e.stopPropagation(); surahSelectOptions.style.display = 'none'; pageSelectOptions.style.display = pageSelectOptions.style.display === 'block' ? 'none' : 'block'; };
 
 document.addEventListener('click', (e) => {
-  if (!e.target.closest('.popover') && !e.target.closest('.verse-number')) {
-    document.querySelectorAll('.popover').forEach(p => p.style.display = 'none');
-  }
+  if (!e.target.closest('.popover') && !e.target.closest('[data-bs-toggle="popover"]')) { if (activePopover) { activePopover.hide(); activePopover = null; } }
   surahSelectOptions.style.display = 'none'; pageSelectOptions.style.display = 'none';
 });
 
@@ -453,41 +520,18 @@ document.getElementById('themeBtn').onclick = () => {
   document.getElementById('themeBtn').textContent = document.body.classList.contains('dark') ? "☀️" : "🌙";
 };
 
-document.getElementById('fontIncrease').onclick = () => { if(currentFontSize < 40) { currentFontSize += 2; displayVerses(currentPage); } };
-document.getElementById('fontDecrease').onclick = () => { if(currentFontSize > 14) { currentFontSize -= 2; displayVerses(currentPage); } };
-
-initSurahDropdown();
-// loadSurah(0, 0);
-
-// Initialize based on URL or defaults
 function initFromURL() {
   const params = new URLSearchParams(window.location.search);
   const surahNum = parseInt(params.get('surah'));
   const pageNum = parseInt(params.get('page'));
-
-  // Default values if parameters are missing or invalid
-  let sIndex = 0; // Default Surah 1 (Index 0)
-  let pIndex = 0; // Default Page 1 (Index 0)
-
-  if (!isNaN(surahNum)) {
-    // Find index of surah number
-    const foundIndex = quranData.surahs.findIndex(s => s.number === surahNum);
-    if (foundIndex !== -1) sIndex = foundIndex;
-  }
-
-  if (!isNaN(pageNum)) {
-    pIndex = pageNum - 1; // URL uses 1-based, code uses 0-based
-  }
-
-  initSurahDropdown();
-  loadSurah(sIndex, pIndex);
-  document.documentElement.style.setProperty('--current-font-size', currentFontSize);
+  let sIndex = 0; let pIndex = 0;
+  if (!isNaN(surahNum)) { const foundIndex = quranData.surahs.findIndex(s => s.number === surahNum); if (foundIndex !== -1) sIndex = foundIndex; }
+  if (!isNaN(pageNum)) pIndex = pageNum - 1;
+  initSurahDropdown(); loadSurah(sIndex, pIndex);
 }
 
-// Call this instead of the old loadSurah(0, 0)
 initFromURL();
 
 </script>
-
 </body>
 </html>
