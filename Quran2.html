@@ -6,16 +6,6 @@
 <title>القرآن الكريم</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script>
-  if (window.Telegram && Telegram.WebApp) {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
-
-    Telegram.WebApp.onEvent('viewportChanged', () => {
-      Telegram.WebApp.expand();
-    });
-  }
-</script>
 <style>
   body {
     font-family: 'Arial', sans-serif;
@@ -129,7 +119,7 @@
   .dropdown-options::-webkit-scrollbar { width: 8px; }
   .dropdown-options::-webkit-scrollbar-track { background: transparent; }
   .dropdown-options::-webkit-scrollbar-thumb { background-color: green; border-radius: 8px; }
-  body.dark .dropdown-options::-webkit-scrollbar-thumb { background-color: green; }
+  body.dark .dropdown-options::-webkit-scrollbar-thumb { background-color: #4ade80; }
 
   h1#surahName { font-size: 40px; margin: 5px 0; }
   .bismillah { font-size: 26px; font-weight: bold; color: #555; margin: 5px 0 20px 0; }
@@ -146,7 +136,7 @@
 
   .verse { font-size: 24px; margin: 12px 0; display: inline; position: relative; }
   .verse-number { color: green; font-weight: bold; margin-left: 8px; cursor: pointer; display: inline-block; }
-  body.dark .verse-number { color: green; }
+  body.dark .verse-number { color: #4ade80; }
 
   /* TRANSLATION POPOVER (Glass Effect) */
 .popover {
@@ -239,10 +229,10 @@
 
     /* Dark mode tweak */
     body.dark .popover-body::-webkit-scrollbar-thumb {
-    background-color: green;
+    background-color: #4ade80;
     }
 
-    body.dark .close-popover { color: green !important; }
+    body.dark .close-popover { color: #4ade80 !important; }
 
   @keyframes flipFastLeft { 
     0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
@@ -262,122 +252,14 @@
     h1#surahName { font-size: 32px; }
     .verse { font-size: 20px; }
     .popover { max-width: 280px; }
-    
-    body {
-      padding-top: calc(130px + env(safe-area-inset-top));
-    }
-    
-    #header {
-      padding: 8px 10px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    
-    #leftSide, #rightSide {
-      width: 100%;
-      align-items: stretch;
-    }
-    
-    #navButtons button, 
-    #buttonsContainer button, 
-    .dropdown-button {
-      padding: 4px 10px;
-      font-size: 14px;
-      height: 34px;
-      min-width: auto;
-    }
-    
-    .dropdown-button {
-      min-width: 100px;
-      font-size: 13px;
-    }
-    
-    #leftSide, #rightSide {
-      gap: 6px;
-    }
-    
-    #navButtons, #buttonsContainer {
-      gap: 4px;
-      justify-content: flex-end;
-    }
-    
-    #fontDecrease, #fontIncrease { 
-      min-width: 38px; 
-    }
-  }
-
-  @media (min-width: 501px) {
-    #header {
-      gap: 400px;
-      justify-content: center;
-    }
   }
 
   #fontDecrease, #fontIncrease { min-width: 45px; text-align: center; }
-
-  /* Telegram Mini App Controls */
-  #tgTopControls {
-    position: fixed;
-    top: 10px;
-    left: 0;
-    right: 0;
-    height: 32px;
-    z-index: 10001;
-    pointer-events: none;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  #tgClose,
-  #tgMinimize {
-    pointer-events: auto;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: none;
-    background: rgba(164, 181, 134, 0.3);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    font-size: 20px;
-    line-height: 1;
-    font-weight: bold;
-    cursor: pointer;
-    color: #000;
-  }
-
-  body.dark #tgClose,
-  body.dark #tgMinimize {
-    background: rgba(51, 51, 51, 0.6);
-  }
-  
-  #tgClose {
-    color: #ff0000;
-  }
-  
-  #tgMinimize {
-    color: green;
-  }
-
-  body.dark #tgClose {
-    color: #ff5555;
-  }
-
-  body.dark #tgMinimize {
-    color: green;
-  }
 </style>
 </head>
 <body>
 
 <div id="progressBarContainer"><div id="progressBar"></div></div>
-
-<div id="tgTopControls">
-  <button id="tgMinimize">−</button>
-  <button id="tgClose">✕</button>
-</div>
 
 <div id="header">
   <div id="leftSide">
@@ -647,22 +529,6 @@ function initFromURL() {
 }
 
 initFromURL();
-
-// Telegram Mini App Controls
-if (window.Telegram && Telegram.WebApp) {
-  document.getElementById('tgClose').onclick = () => {
-    Telegram.WebApp.close();
-  };
-
-  document.getElementById('tgMinimize').onclick = () => {
-    Telegram.WebApp.expand();
-  };
-
-  // Re-expand on viewport changes
-  Telegram.WebApp.onEvent('viewportChanged', () => {
-    Telegram.WebApp.expand();
-  });
-}
 
 </script>
 </body>
