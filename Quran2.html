@@ -601,18 +601,19 @@ function initFromURL() {
 
 initFromURL();
 
-Telegram.WebApp.onEvent('viewportChanged', () => {
-  Telegram.WebApp.expand();
-});
-if (window.Telegram && Telegram.WebApp) {
-  document.getElementById('tgClose').onclick = () => {
-    Telegram.WebApp.close();
-  };
+  Telegram.WebApp.onEvent('viewportChanged', () => {
+    Telegram.WebApp.expand();
+  });
+  if (window.Telegram && Telegram.WebApp) {
+    document.getElementById('tgClose').onclick = () => {
+      Telegram.WebApp.close();
+    };
 
-  document.getElementById('tgMinimize').onclick = () => {
-    Telegram.WebApp.expand(); // Telegram has NO true minimize
-  };
-}
+    document.getElementById('tgMinimize').onclick = () => {
+      Telegram.WebApp.expand(); // Telegram has NO true minimize
+    };
+  }
+  window.addEventListener('load', () => tg.expand());
 </script>
 </body>
 </html>
