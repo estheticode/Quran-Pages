@@ -551,26 +551,8 @@ async function initTelegramApp() {
       if (tg.isFullscreen !== undefined) {
         tg.requestFullscreen();
       }
-      
-      // Apply Telegram theme colors to your app
-      if (tg.colorScheme === 'dark') {
-        document.body.classList.add('dark');
-        document.getElementById('themeBtn').textContent = "☀️";
-      }
-      
-      // Listen for theme changes
-      tg.onEvent('themeChanged', function() {
-        if (tg.colorScheme === 'dark') {
-          document.body.classList.add('dark');
-          document.getElementById('themeBtn').textContent = "☀️";
-        } else {
-          document.body.classList.remove('dark');
-          document.getElementById('themeBtn').textContent = "🌙";
-        }
-      });
-      
-      // Enable closing confirmation (optional)
-      tg.enableClosingConfirmation();
+
+      document.body.style.paddingTop = '140px';
       
       // Tell Telegram the app is ready
       tg.ready();
