@@ -255,8 +255,21 @@
     .verse { font-size: 20px; }
     .popover { max-width: 280px; }
   }
-
   #fontDecrease, #fontIncrease { min-width: 45px; text-align: center; }
+  /* Mobile top safe space */
+  @media (max-width: 768px) {
+    body {
+      padding-top: 160px; /* space above content */
+    }
+
+    #progressBarContainer {
+      top: 20px; /* push progress bar down */
+    }
+
+    #header {
+      top: 26px; /* 20px spacer + 6px progress bar */
+    }
+  }
 </style>
 </head>
 <body>
@@ -552,8 +565,6 @@ async function initTelegramApp() {
         tg.requestFullscreen();
       }
 
-      document.body.style.paddingTop = '140px';
-      
       // Tell Telegram the app is ready
       tg.ready();
     }
