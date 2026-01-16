@@ -138,14 +138,101 @@
   .verse-number { color: green; font-weight: bold; margin-left: 8px; cursor: pointer; display: inline-block; }
   body.dark .verse-number { color: #4ade80; }
 
-  .popover { max-width: 400px; text-align: left; }
-  .popover-header { position: sticky !important; top: 0 !important; z-index: 10 !important; background: #fff !important; }
-  .popover-body { max-height: 250px !important; overflow-y: auto !important; overflow-x: hidden !important; }
-  .close-popover { cursor: pointer !important; float: right !important; font-weight: bold !important; color: green !important; font-size: 24px !important; line-height: 1 !important; margin-left: 10px !important; }
+  /* TRANSLATION POPOVER (Glass Effect) */
+.popover {
+    max-width: 400px;
+    text-align: left;
+    background: rgba(244, 228, 193, 0.5); /* semi-transparent light */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 16px;
+    color: #000;
+}
 
-  body.dark .popover { background:#1e1e1e; color:#f0f0f0; border-color:#444; }
-  body.dark .popover-header { background:#2a2a2a !important; color:#f0f0f0; border-bottom-color:#444; }
-  body.dark .popover-body { background:#1e1e1e; color:#f0f0f0; }
+.popover-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background: rgba(244, 228, 193, 0.4) !important; /* semi-transparent header */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    color: #000;
+    padding: 8px 12px;
+}
+
+.popover-body {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    background: transparent;
+    padding: 12px;
+    color: #000;
+}
+
+  /* DARK MODE POPOVER GLASS EFFECT */
+  body.dark .popover {
+      background: rgba(18, 18, 18, 0.4); /* semi-transparent dark */
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #f0f0f0;
+  }
+
+  body.dark .popover-header {
+      background: rgba(18, 18, 18, 0.3) !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #f0f0f0;
+      border-bottom: 1px solid #fff;
+  }
+
+  body.dark .popover-body {
+      background: transparent;
+      color: #f0f0f0;
+  }
+
+  
+  .close-popover {
+    cursor: pointer !important;
+    float: right !important;
+    font-weight: bold !important;
+    color: green !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    margin-left: 10px !important;
+  }
+
+  /* Green scrollbar for popover body */
+    .popover-body::-webkit-scrollbar {
+    width: 8px;
+    }
+
+    .popover-body::-webkit-scrollbar-track {
+    background: transparent;
+    }
+
+    .popover-body::-webkit-scrollbar-thumb {
+    background-color: green;
+    border-radius: 8px;
+    }
+
+    .popover-body::-webkit-scrollbar-thumb:hover {
+    background-color: #0f9d58;
+    }
+
+    /* Firefox */
+    .popover-body {
+    scrollbar-width: thin;
+    scrollbar-color: green transparent;
+    }
+
+    /* Dark mode tweak */
+    body.dark .popover-body::-webkit-scrollbar-thumb {
+    background-color: #4ade80;
+    }
+
+    body.dark .close-popover { color: #4ade80 !important; }
 
   @keyframes flipFastLeft { 
     0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
@@ -274,32 +361,59 @@ function initPageDropdown() {
 
 function displayVerses(pageIndex) {
   versesContainer.innerHTML = "";
+  
   const currentSurah = quranData.surahs[currentSurahIndex];
+  // Prioritize surah-specific direction, fallback to global setting
   const transDir = currentSurah.translation_dir || quranData.translation_dir || 'ltr';
+  
+  // --- FONT CALCULATION ---
   const defaultArabicSize = 24;
   const isMobile = window.innerWidth < 500;
+  
+  // Higher default base for mobile (18px) vs desktop (15px)
   const defaultPopoverSize = isMobile ? 18 : 15; 
   let popoverFontSize = defaultPopoverSize;
 
+  // Scale translation font up if user scales Arabic font via (+)
   if (currentFontSize > defaultArabicSize) {
     popoverFontSize = defaultPopoverSize + (currentFontSize - defaultArabicSize);
   }
   popoverFontSize = Math.max(defaultPopoverSize, Math.min(40, popoverFontSize));
 
   pages[pageIndex].forEach((verse, idx) => {
+    // Get actual verse number
     const verseNum = verse.number || (pageIndex * maxVersesPerPage + idx + 1);
     const verseDiv = document.createElement('div');
     verseDiv.className = "verse";
     verseDiv.style.fontSize = currentFontSize + "px";
-    const safeTranslation = verse.translation.replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
+    
+    // 1. Escape single and double quotes to prevent breaking the HTML attribute logic
+    const safeTranslation = verse.translation
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;'); 
+    
+    // 2. Wrap in a styled span. 
+    // We use single quotes for the inline style to stay safe inside the data-bs-content double quotes.
     const styledTranslation = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: ${transDir};'>${safeTranslation}</span>`;
-    verseDiv.innerHTML = `${verse.arabic} <span class="verse-number" data-bs-toggle="popover" data-bs-trigger="click" data-bs-placement="auto" data-bs-content="${styledTranslation}" data-index="${verseNum}">[${verseNum}]</span>`;
+    
+    // 3. Render the verse and the popover trigger
+    // Using double quotes for data-bs-content to allow the single quotes inside styledTranslation
+    verseDiv.innerHTML = `${verse.arabic} <span class="verse-number" 
+        data-bs-toggle="popover" 
+        data-bs-trigger="click" 
+        data-bs-placement="auto" 
+        data-bs-content="${styledTranslation}" 
+        data-index="${verseNum}">[${verseNum}]</span>`;
+
     versesContainer.appendChild(verseDiv);
   });
 
+  // Initialize Bootstrap popovers
   document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
     const popover = new bootstrap.Popover(el, {
-      html: true, sanitize: false, container: 'body',
+      html: true,
+      sanitize: false, // Vital: allows the style attribute in our span
+      container: 'body',
       template: `
         <div class="popover" role="tooltip" style="direction: ${transDir}; text-align: ${transDir === 'rtl' ? 'right' : 'left'};">
           <div class="popover-arrow"></div>
@@ -310,9 +424,15 @@ function displayVerses(pageIndex) {
           <div class="popover-body" style="direction: ${transDir}; padding: 12px;"></div>
         </div>`
     });
+    
     el.addEventListener('shown.bs.popover', function () {
-      if (activePopover && activePopover !== popover) activePopover.hide();
+      // Close any other open popovers
+      if (activePopover && activePopover !== popover) {
+        activePopover.hide();
+      }
       activePopover = popover;
+      
+      // Handle the custom "X" close button
       setTimeout(() => {
         const closeBtn = document.querySelector('.popover.show .close-popover');
         if (closeBtn) {
@@ -409,6 +529,7 @@ function initFromURL() {
 }
 
 initFromURL();
+
 </script>
 </body>
 </html>
