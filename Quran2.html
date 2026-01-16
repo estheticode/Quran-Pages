@@ -257,23 +257,44 @@
   }
   #fontDecrease, #fontIncrease { min-width: 45px; text-align: center; }
   /* Mobile top safe space */
-  @media (max-width: 768px) {
-    body {
-      padding-top: 160px; /* space above content */
-    }
+  
+  #tgTopSpacer { display: none; }
 
-    #progressBarContainer {
-      top: 20px; /* push progress bar down */
-    }
-
-    #header {
-      top: 26px; /* 20px spacer + 6px progress bar */
-    }
+@media (max-width: 768px) {
+  body.is-telegram #tgTopSpacer {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(20px + env(safe-area-inset-top));
+    background: #F4E4C1; /* light mode */
+    z-index: 9998;
+    pointer-events: none;
   }
+
+  body.dark.is-telegram #tgTopSpacer {
+    background: #121212;
+  }
+
+  body.is-telegram {
+    padding-top: 160px;
+  }
+
+  body.is-telegram #progressBarContainer {
+    top: calc(20px + env(safe-area-inset-top));
+  }
+
+  body.is-telegram #header {
+    top: calc(26px + env(safe-area-inset-top));
+  }
+}
+
+
 </style>
 </head>
 <body>
-
+<div id="tgTopSpacer"></div>
 <div id="progressBarContainer"><div id="progressBar"></div></div>
 
 <div id="header">
@@ -579,6 +600,9 @@ if (window.Telegram?.WebApp) {
 } else {
   // Wait for Telegram script to load if not ready yet
   window.addEventListener('load', initTelegramApp);
+}
+if (window.Telegram?.WebApp?.initData) {
+  document.body.classList.add('is-telegram');
 }
 
 </script>
