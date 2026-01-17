@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- theme button change -->
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
@@ -48,20 +49,15 @@
   #navButtons button, 
   #buttonsContainer button, 
   .dropdown-button {
-    background: rgba(164, 181, 134, 0.3); /* semi-transparent #B5C697 */
-    color: #000; /* text color */
-    backdrop-filter: blur(10px); /* frosted glass blur */
-    -webkit-backdrop-filter: blur(10px); /* Safari support */
-    border: 1px solid rgba(181, 198, 151, 0.4); /* subtle border */
-
+    background: rgba(164, 181, 134, 0.3);
+    color: #000;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(181, 198, 151, 0.4);
     padding: 6px 14px;
     font-size: 16px;
-    border: none;
     border-radius: 999px;
     cursor: pointer;
-    
-
-    color: #000;
     height: 38px;
     display: flex;
     align-items: center;
@@ -74,21 +70,19 @@
   body.dark #navButtons button, 
   body.dark #buttonsContainer button, 
   body.dark .dropdown-button { 
-      background: rgba(51, 51, 51, 0.6); /* semi-transparent dark */
+      background: rgba(51, 51, 51, 0.6);
       color: #f0f0f0; 
-      backdrop-filter: blur(10px); /* frosted glass blur */
-      -webkit-backdrop-filter: blur(10px); /* Safari support */
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
   }
-  body.dark #buttonsContainer button { font-weight: bold; }
 
   .dropdown-container { position: relative; display: inline-block; }
   .dropdown-button { min-width: 120px; }
 
   .dropdown-options {
     position: fixed;
-    /* background: #fff; */
-    background: rgba(164, 181, 134, 0.3); /* semi-transparent #B5C697 */
-    backdrop-filter: blur(10px); /* frosted glass blur */
+    background: rgba(164, 181, 134, 0.3);
+    backdrop-filter: blur(10px);
     border: 1px solid #aaa;
     border-radius: 16px;
     max-height: 300px;
@@ -99,9 +93,8 @@
     padding: 6px 0;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
-  /* DARK MODE DROPDOWN OPTIONS */
   body.dark .dropdown-options { 
-      background: rgba(34, 34, 34, 0.6); /* semi-transparent dark */
+      background: rgba(34, 34, 34, 0.6);
       color: #f0f0f0;
       backdrop-filter: blur(10px); 
       -webkit-backdrop-filter: blur(10px);
@@ -117,7 +110,6 @@
   .dropdown-options > div:hover { background: #f0f0f0; }
   body.dark .dropdown-options > div:hover { background: #2a2a2a; }
 
-  /* Scrollbar Styling */
   .dropdown-options::-webkit-scrollbar { width: 8px; }
   .dropdown-options::-webkit-scrollbar-track { background: transparent; }
   .dropdown-options::-webkit-scrollbar-thumb { background-color: green; border-radius: 8px; }
@@ -140,42 +132,40 @@
   .verse-number { color: green; font-weight: bold; margin-left: 8px; cursor: pointer; display: inline-block; }
   body.dark .verse-number { color: #4ade80; }
 
-  /* TRANSLATION POPOVER (Glass Effect) */
-.popover {
+  .popover {
     max-width: 400px;
     text-align: left;
-    background: rgba(244, 228, 193, 0.5); /* semi-transparent light */
+    background: rgba(244, 228, 193, 0.5);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(0,0,0,0.1);
     border-radius: 16px;
     color: #000;
-}
+  }
 
-.popover-header {
+  .popover-header {
     position: sticky !important;
     top: 0 !important;
     z-index: 10 !important;
-    background: rgba(244, 228, 193, 0.4) !important; /* semi-transparent header */
+    background: rgba(244, 228, 193, 0.4) !important;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid rgba(0,0,0,0.1);
     color: #000;
     padding: 8px 12px;
-}
+  }
 
-.popover-body {
+  .popover-body {
     max-height: 250px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     background: transparent;
     padding: 12px;
     color: #000;
-}
+  }
 
-  /* DARK MODE POPOVER GLASS EFFECT */
   body.dark .popover {
-      background: rgba(18, 18, 18, 0.4); /* semi-transparent dark */
+      background: rgba(18, 18, 18, 0.4);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       color: #f0f0f0;
@@ -194,7 +184,6 @@
       color: #f0f0f0;
   }
 
-  
   .close-popover {
     cursor: pointer !important;
     float: right !important;
@@ -205,36 +194,13 @@
     margin-left: 10px !important;
   }
 
-  /* Green scrollbar for popover body */
-    .popover-body::-webkit-scrollbar {
-    width: 8px;
-    }
-
-    .popover-body::-webkit-scrollbar-track {
-    background: transparent;
-    }
-
-    .popover-body::-webkit-scrollbar-thumb {
-    background-color: green;
-    border-radius: 8px;
-    }
-
-    .popover-body::-webkit-scrollbar-thumb:hover {
-    background-color: #0f9d58;
-    }
-
-    /* Firefox */
-    .popover-body {
-    scrollbar-width: thin;
-    scrollbar-color: green transparent;
-    }
-
-    /* Dark mode tweak */
-    body.dark .popover-body::-webkit-scrollbar-thumb {
-    background-color: #4ade80;
-    }
-
-    body.dark .close-popover { color: #4ade80 !important; }
+  .popover-body::-webkit-scrollbar { width: 8px; }
+  .popover-body::-webkit-scrollbar-track { background: transparent; }
+  .popover-body::-webkit-scrollbar-thumb { background-color: green; border-radius: 8px; }
+  .popover-body::-webkit-scrollbar-thumb:hover { background-color: #0f9d58; }
+  .popover-body { scrollbar-width: thin; scrollbar-color: green transparent; }
+  body.dark .popover-body::-webkit-scrollbar-thumb { background-color: #4ade80; }
+  body.dark .close-popover { color: #4ade80 !important; }
 
   @keyframes flipFastLeft { 
     0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
@@ -256,7 +222,6 @@
     .popover { max-width: 280px; }
   }
   #fontDecrease, #fontIncrease { min-width: 45px; text-align: center; }
-  /* Mobile top safe space */
   
   #tgTopSpacer { display: block; }
   @media (max-width: 768px) {
@@ -266,8 +231,8 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.12));
-      background: #F4E4C1; /* light mode */
+      height: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.08));
+      background: #F4E4C1;
       z-index: 9998;
       pointer-events: none;
     }
@@ -281,22 +246,19 @@
     }
 
     body.is-telegram #header {
-  top: max(calc(86px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.12 + 6px));
+      top: max(calc(86px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.08 + 6px));
     }
 
     body.is-telegram #progressBarContainer {
-      top: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.12));
+      top: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.08));
     }
   }
   
-  /* Extra adjustment for very small screens */
   @media (max-width: 768px) and (max-height: 700px) {
     body {
       padding-top: max(250px, calc(25vh + 80px + env(safe-area-inset-top)));
     }
   }
-
-
 </style>
 </head>
 <body>
@@ -319,7 +281,11 @@
     <div id="buttonsContainer">
       <button id="fontDecrease">−</button>
       <button id="fontIncrease">+</button>
-      <button id="themeBtn">🌙</button>
+      <button id="themeBtn">
+        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px;">
+          <path id="theme-icon-path" stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+        </svg>
+      </button>
     </div>
     <div id="navButtons">
       <button id="nextPage">◀</button>
@@ -405,41 +371,31 @@ function displayVerses(pageIndex) {
   versesContainer.innerHTML = "";
   
   const currentSurah = quranData.surahs[currentSurahIndex];
-  // Prioritize surah-specific direction, fallback to global setting
   const transDir = currentSurah.translation_dir || quranData.translation_dir || 'ltr';
   
-  // --- FONT CALCULATION ---
   const defaultArabicSize = 24;
   const isMobile = window.innerWidth < 500;
   
-  // Higher default base for mobile (18px) vs desktop (15px)
   const defaultPopoverSize = isMobile ? 16 : 14; 
   let popoverFontSize = defaultPopoverSize;
 
-  // Scale translation font up if user scales Arabic font via (+)
   if (currentFontSize > defaultArabicSize) {
     popoverFontSize = defaultPopoverSize + (currentFontSize - defaultArabicSize);
   }
   popoverFontSize = Math.max(defaultPopoverSize, Math.min(40, popoverFontSize));
 
   pages[pageIndex].forEach((verse, idx) => {
-    // Get actual verse number
     const verseNum = verse.number || (pageIndex * maxVersesPerPage + idx + 1);
     const verseDiv = document.createElement('div');
     verseDiv.className = "verse";
     verseDiv.style.fontSize = currentFontSize + "px";
     
-    // 1. Escape single and double quotes to prevent breaking the HTML attribute logic
     const safeTranslation = verse.translation
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;'); 
     
-    // 2. Wrap in a styled span. 
-    // We use single quotes for the inline style to stay safe inside the data-bs-content double quotes.
     const styledTranslation = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: ${transDir};'>${safeTranslation}</span>`;
     
-    // 3. Render the verse and the popover trigger
-    // Using double quotes for data-bs-content to allow the single quotes inside styledTranslation
     verseDiv.innerHTML = `${verse.arabic} <span class="verse-number" 
         data-bs-toggle="popover" 
         data-bs-trigger="click" 
@@ -450,11 +406,10 @@ function displayVerses(pageIndex) {
     versesContainer.appendChild(verseDiv);
   });
 
-  // Initialize Bootstrap popovers
   document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
     const popover = new bootstrap.Popover(el, {
       html: true,
-      sanitize: false, // Vital: allows the style attribute in our span
+      sanitize: false,
       container: 'body',
       template: `
         <div class="popover" role="tooltip" style="direction: ${transDir}; text-align: ${transDir === 'rtl' ? 'right' : 'left'};">
@@ -468,13 +423,11 @@ function displayVerses(pageIndex) {
     });
     
     el.addEventListener('shown.bs.popover', function () {
-      // Close any other open popovers
       if (activePopover && activePopover !== popover) {
         activePopover.hide();
       }
       activePopover = popover;
       
-      // Handle the custom "X" close button
       setTimeout(() => {
         const closeBtn = document.querySelector('.popover.show .close-popover');
         if (closeBtn) {
@@ -555,9 +508,22 @@ document.addEventListener('click', (e) => {
   surahSelectOptions.style.display = 'none'; pageSelectOptions.style.display = 'none';
 });
 
+// Theme toggle with SVG icons
 document.getElementById('themeBtn').onclick = () => {
   document.body.classList.toggle('dark');
-  document.getElementById('themeBtn').textContent = document.body.classList.contains('dark') ? "☀️" : "🌙";
+  const iconPath = document.getElementById('theme-icon-path');
+  
+  // Moon icon path (for light mode - clicking will switch to dark)
+  const moonPath = "M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z";
+  
+  // Sun icon path (for dark mode - clicking will switch to light)
+  const sunPath = "M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z";
+  
+  if (document.body.classList.contains('dark')) {
+    iconPath.setAttribute('d', sunPath);
+  } else {
+    iconPath.setAttribute('d', moonPath);
+  }
 };
 
 function initFromURL() {
@@ -576,11 +542,9 @@ function getTelegramHeight() {
   const tg = window.Telegram?.WebApp;
   
   if (tg && tg.viewportHeight) {
-    // Use Telegram's viewport height when available
     return tg.viewportHeight;
   }
   
-  // Fallback to standard window height
   return window.innerHeight;
 }
 
@@ -604,10 +568,8 @@ async function initTelegramApp() {
         tg.requestFullscreen();
       }
 
-      // Set initial viewport height
       updateViewportHeight();
       
-      // Listen for viewport changes (keyboard, orientation, etc.)
       tg.onEvent('viewportChanged', () => {
         updateViewportHeight();
       });
@@ -615,26 +577,22 @@ async function initTelegramApp() {
       tg.ready();
     }
   } catch (error) {
-    // Silent error handling for production
+    // Silent error handling
   }
 }
 
-  // Initialize Telegram app
-  if (window.Telegram?.WebApp) {
-    initTelegramApp();
-  } else {
-    window.addEventListener('load', initTelegramApp);
-  }
+if (window.Telegram?.WebApp) {
+  initTelegramApp();
+} else {
+  window.addEventListener('load', initTelegramApp);
+}
 
-  if (window.Telegram?.WebApp?.initData) {
-    document.body.classList.add('is-telegram');
-  }
+if (window.Telegram?.WebApp?.initData) {
+  document.body.classList.add('is-telegram');
+}
 
-  // Also update on window resize as fallback
-  window.addEventListener('resize', updateViewportHeight);
-
-  // Set initial value immediately
-  updateViewportHeight();
+window.addEventListener('resize', updateViewportHeight);
+updateViewportHeight();
 
 </script>
 </body>
