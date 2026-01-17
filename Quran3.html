@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<!-- translate -->
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>القرآن الكريم</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: #F4E4C1;
+    color: #000;
+    padding: 120px 20px 20px 20px;
+    text-align: center;
+    direction: rtl;
+    max-width: 1000px;  
+    margin: 0 auto;      
+    box-sizing: border-box;
+    overflow-x: hidden; 
+  }
+  body.dark { background: #121212; color: #f0f0f0; }
+
+  #progressBarContainer {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 6px;
+    background: #ddd; z-index: 9999;
+  }
+  body.dark #progressBarContainer { background: #333; }
+  #progressBar { height: 100%; width: 0; background: green; transition: width 0.2s ease; }
+
+  #header {
+    position: fixed; top: 6px; left: 0; right: 0;
+    margin: 0 auto; width: 100%; max-width: 1000px;
+    padding: 10px 20px; background: #F4E4C1; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    box-sizing: border-box; direction: ltr;
+  }
+  body.dark #header { background: #121212; }
+
+  #leftSide, #rightSide { display: flex; flex-direction: column; gap: 10px; }
+  #leftSide { align-items: flex-start; }
+  #rightSide { align-items: flex-end; }
+  
+  #navButtons, #buttonsContainer { display: flex; gap: 6px; }
+
+  /* UNIFIED BUTTON STYLES (Navigation & Dropdowns) */
+  #navButtons button, 
+  #buttonsContainer button, 
+  .dropdown-button {
+    background: rgba(164, 181, 134, 0.3);
+    color: #000;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(181, 198, 151, 0.4);
+    padding: 6px 14px;
+    font-size: 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+  #buttonsContainer #navButtons button { font-weight: bold; }
+
+  /* DARK MODE UNIFIED BUTTONS */
+  body.dark #navButtons button, 
+  body.dark #buttonsContainer button, 
+  body.dark .dropdown-button { 
+      background: rgba(51, 51, 51, 0.6);
+      color: #f0f0f0; 
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+  }
+
+  .dropdown-container { position: relative; display: inline-block; }
+  .dropdown-button { min-width: 120px; }
+
+  .dropdown-options {
+    position: fixed;
+    background: rgba(164, 181, 134, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid #aaa;
+    border-radius: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 10000;
+    display: none;
+    min-width: 150px;
+    padding: 6px 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  body.dark .dropdown-options { 
+      background: rgba(34, 34, 34, 0.6);
+      color: #f0f0f0;
+      backdrop-filter: blur(10px); 
+      -webkit-backdrop-filter: blur(10px);
+  }
+
+  .dropdown-options > div {
+    margin: 2px 8px;
+    cursor: pointer;
+    padding: 6px 10px;
+    background: transparent;
+  }
+
+  .dropdown-options > div:hover { background: #f0f0f0; }
+  body.dark .dropdown-options > div:hover { background: #2a2a2a; }
+
+  .dropdown-options::-webkit-scrollbar { width: 8px; }
+  .dropdown-options::-webkit-scrollbar-track { background: transparent; }
+  .dropdown-options::-webkit-scrollbar-thumb { background-color: green; border-radius: 8px; }
+  body.dark .dropdown-options::-webkit-scrollbar-thumb { background-color: #4ade80; }
+
+  h1#surahName { font-size: 40px; margin: 5px 0; }
+  .bismillah { font-size: 26px; font-weight: bold; color: #555; margin: 5px 0 20px 0; }
+  body.dark .bismillah { color:#ccc; }
+  body.not-first-page #surahName, body.not-first-page .bismillah { display: none; }
+
+  #versesContainer { 
+    max-width: 100%; margin: 0 auto; line-height: 2;
+    position: relative; 
+    will-change: transform, opacity, filter;
+    transform-origin: center;
+    user-select: none;
+  }
+  
+  /* When showing translation, reverse the visual order for proper LTR reading */
+  #versesContainer.translation-mode {
+    direction: ltr;
+    text-align: left;
+  }
+
+  .verse { font-size: 24px; margin: 12px 0; display: inline; position: relative; }
+  .verse-number { color: green; font-weight: bold; margin-left: 8px; cursor: pointer; display: inline-block; }
+  body.dark .verse-number { color: #4ade80; }
+  
+  /* LTR mode: verse number on left side */
+  .verse.ltr-mode { direction: ltr; }
+  .verse.ltr-mode .verse-number { margin-left: 0; margin-right: 8px; }
+
+  .popover {
+    max-width: 400px;
+    text-align: left;
+    background: rgba(244, 228, 193, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 16px;
+    color: #000;
+  }
+
+  .popover-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background: rgba(244, 228, 193, 0.4) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    color: #000;
+    padding: 8px 12px;
+  }
+
+  .popover-body {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    background: transparent;
+    padding: 12px;
+    color: #000;
+  }
+
+  body.dark .popover {
+      background: rgba(18, 18, 18, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #f0f0f0;
+  }
+
+  body.dark .popover-header {
+      background: rgba(18, 18, 18, 0.3) !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #f0f0f0;
+      border-bottom: 1px solid #fff;
+  }
+
+  body.dark .popover-body {
+      background: transparent;
+      color: #f0f0f0;
+  }
+
+  .close-popover {
+    cursor: pointer !important;
+    float: right !important;
+    font-weight: bold !important;
+    color: green !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    margin-left: 10px !important;
+  }
+
+  .popover-body::-webkit-scrollbar { width: 8px; }
+  .popover-body::-webkit-scrollbar-track { background: transparent; }
+  .popover-body::-webkit-scrollbar-thumb { background-color: green; border-radius: 8px; }
+  .popover-body::-webkit-scrollbar-thumb:hover { background-color: #0f9d58; }
+  .popover-body { scrollbar-width: thin; scrollbar-color: green transparent; }
+  body.dark .popover-body::-webkit-scrollbar-thumb { background-color: #4ade80; }
+  body.dark .close-popover { color: #4ade80 !important; }
+
+  @keyframes flipFastLeft { 
+    0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
+    50% { transform: perspective(1000px) rotateY(45deg); opacity: 0.5; filter: blur(2px); } 
+    100% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
+  }
+  @keyframes flipFastRight { 
+    0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
+    50% { transform: perspective(1000px) rotateY(-45deg); opacity: 0.5; filter: blur(2px); } 
+    100% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
+  }
+  
+  .flipping-forward { animation: flipFastLeft 0.22s cubic-bezier(0.4, 0, 0.2, 1); }
+  .flipping-backward { animation: flipFastRight 0.22s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  @media (max-width: 500px) {
+    h1#surahName { font-size: 32px; }
+    .verse { font-size: 20px; }
+    .popover { max-width: 280px; }
+  }
+  #fontDecrease, #fontIncrease { min-width: 45px; text-align: center; }
+  
+  #tgTopSpacer { display: block; }
+  @media (max-width: 768px) {
+    body.is-telegram #tgTopSpacer {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.10));
+      background: #F4E4C1;
+      z-index: 9998;
+      pointer-events: none;
+    }
+
+    body.dark.is-telegram #tgTopSpacer {
+      background: #121212;
+    }
+
+    body.is-telegram {
+      padding-top: max(230px, calc(20vh + 100px + env(safe-area-inset-top)));
+    }
+
+    body.is-telegram #header {
+      top: max(calc(86px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.10 + 6px));
+    }
+
+    body.is-telegram #progressBarContainer {
+      top: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.10));
+    }
+  }
+  
+  @media (max-width: 768px) and (max-height: 700px) {
+    body {
+      padding-top: max(250px, calc(25vh + 80px + env(safe-area-inset-top)));
+    }
+  }
+</style>
+</head>
+<body>
+<div id="tgTopSpacer"></div>
+<div id="progressBarContainer"><div id="progressBar"></div></div>
+
+<div id="header">
+  <div id="leftSide">
+    <div class="dropdown-container">
+      <div class="dropdown-button" id="surahSelectButton">1. الأعلى ▼</div>
+      <div class="dropdown-options" id="surahSelectOptions"></div>
+    </div>
+    <div class="dropdown-container">
+      <div class="dropdown-button" id="pageSelectButton">Page 1 ▼</div>
+      <div class="dropdown-options" id="pageSelectOptions"></div>
+    </div>
+  </div>
+
+  <div id="rightSide">
+    <div id="buttonsContainer">
+      <button id="fontDecrease">−</button>
+      <button id="fontIncrease">+</button>
+      <button id="themeBtn">
+        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 20px; height: 20px;">
+          <path id="theme-icon-path" stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+        </svg>
+      </button>
+    </div>
+    <div id="navButtons">
+      <button id="translateBtn" title="Toggle Translation">T</button>
+      <button id="nextPage">⟵</button>
+      <button id="prevPage">⟶</button> 
+    </div>
+  </div>
+</div>
+
+<h1 id="surahName">الأعلى</h1>
+<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+
+<div id="versesContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="quranData.js"></script>
+
+<script>
+const maxVersesPerPage = 10;
+let currentSurahIndex = 0;
+let currentPage = 0;
+let currentFontSize = 24;
+let pages = [];
+let totalPages = 0;
+let activePopover = null;
+
+const versesContainer = document.getElementById('versesContainer');
+const surahSelectButton = document.getElementById('surahSelectButton');
+const surahSelectOptions = document.getElementById('surahSelectOptions');
+const pageSelectButton = document.getElementById('pageSelectButton');
+const pageSelectOptions = document.getElementById('pageSelectOptions');
+
+let startX = 0, isDragging = false;
+const minSwipeDist = 85;
+let showTranslation = false; // Track translation mode
+
+function initSurahDropdown() {
+  surahSelectOptions.innerHTML = '';
+  quranData.surahs.forEach((surah, index) => {
+    const option = document.createElement('div');
+    option.style.padding = "8px 12px";
+    option.textContent = `${surah.number}. ${surah.name}`;
+    option.addEventListener('click', () => { 
+      loadSurah(index, 0, 'forward'); 
+      surahSelectOptions.style.display = 'none'; 
+    });
+    surahSelectOptions.appendChild(option);
+  });
+}
+
+function updateURL(surahNum, pageNum) {
+  const newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + `?surah=${surahNum}&page=${pageNum + 1}`;
+  window.history.replaceState({path: newurl}, '', newurl);
+}
+
+function loadSurah(surahIndex, pageIndex = 0, direction = 'none') {
+  currentSurahIndex = surahIndex;
+  const surah = quranData.surahs[surahIndex];
+  document.getElementById('surahName').textContent = surah.name;
+  surahSelectButton.textContent = `${surah.number}. ${surah.name} ▼`;
+  totalPages = Math.ceil(surah.verses.length / maxVersesPerPage);
+  pages = [];
+  for(let i = 0; i < totalPages; i++) pages.push(surah.verses.slice(i * maxVersesPerPage, (i + 1) * maxVersesPerPage));
+  initPageDropdown();
+  const targetPage = pageIndex === 'last' ? totalPages - 1 : Math.min(pageIndex, totalPages - 1);
+  goToPage(targetPage, direction);
+}
+
+function initPageDropdown() {
+  pageSelectOptions.innerHTML = '';
+  for(let i = 0; i < totalPages; i++) {
+    const option = document.createElement('div');
+    option.style.padding = "8px 12px";
+    option.textContent = "Page " + (i + 1);
+    option.addEventListener('click', () => { 
+      const direction = i > currentPage ? 'forward' : 'backward';
+      goToPage(i, direction); 
+      pageSelectOptions.style.display = 'none'; 
+    });
+    pageSelectOptions.appendChild(option);
+  }
+}
+
+function displayVerses(pageIndex) {
+  versesContainer.innerHTML = "";
+  
+  // Add/remove class to container based on mode
+  if (showTranslation) {
+    versesContainer.classList.add('translation-mode');
+  } else {
+    versesContainer.classList.remove('translation-mode');
+  }
+  
+  const currentSurah = quranData.surahs[currentSurahIndex];
+  const transDir = currentSurah.translation_dir || quranData.translation_dir || 'ltr';
+  
+  const defaultArabicSize = 24;
+  const isMobile = window.innerWidth < 500;
+  
+  const defaultPopoverSize = isMobile ? 16 : 14; 
+  let popoverFontSize = defaultPopoverSize;
+
+  if (currentFontSize > defaultArabicSize) {
+    popoverFontSize = defaultPopoverSize + (currentFontSize - defaultArabicSize);
+  }
+  popoverFontSize = Math.max(defaultPopoverSize, Math.min(40, popoverFontSize));
+
+  pages[pageIndex].forEach((verse, idx) => {
+    const verseNum = verse.number || (pageIndex * maxVersesPerPage + idx + 1);
+    const verseDiv = document.createElement('div');
+    verseDiv.className = "verse";
+    verseDiv.style.fontSize = currentFontSize + "px";
+    
+    const safeTranslation = verse.translation
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    
+    const safeArabic = verse.arabic
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    
+    // Determine what to show in main view vs popover based on mode
+    let mainText, popoverContent;
+    
+    if (showTranslation) {
+      // Show translation as main text, Arabic in popover
+      mainText = verse.translation+'. ';
+      verseDiv.classList.add('ltr-mode');
+      popoverContent = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: rtl;'>${safeArabic}</span>`;
+      
+      // For LTR: verse number BEFORE the text
+      verseDiv.innerHTML = `<span class="verse-number" 
+        data-bs-toggle="popover" 
+        data-bs-trigger="click" 
+        data-bs-placement="auto" 
+        data-bs-content="${popoverContent}" 
+        data-index="${verseNum}">[${verseNum}]</span>${mainText}`;
+    } else {
+      // Show Arabic as main text, translation in popover
+      mainText = verse.arabic;
+      popoverContent = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: ${transDir};'>${safeTranslation}</span>`;
+      
+      // For RTL: verse number AFTER the text
+      verseDiv.innerHTML = `${mainText} <span class="verse-number" 
+        data-bs-toggle="popover" 
+        data-bs-trigger="click" 
+        data-bs-placement="auto" 
+        data-bs-content="${popoverContent}" 
+        data-index="${verseNum}">[${verseNum}]</span>`;
+    }
+
+    versesContainer.appendChild(verseDiv);
+  });
+
+  document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+    const popoverDir = showTranslation ? 'rtl' : transDir;
+    const popoverAlign = showTranslation ? 'right' : (transDir === 'rtl' ? 'right' : 'left');
+    const headerLabel = showTranslation ? 'Arabic' : 'Translation';
+    
+    const popover = new bootstrap.Popover(el, {
+      html: true,
+      sanitize: false,
+      container: 'body',
+      template: `
+        <div class="popover" role="tooltip" style="direction: ${popoverDir}; text-align: ${popoverAlign};">
+          <div class="popover-arrow"></div>
+          <h3 class="popover-header" style="padding: 8px 12px;">
+            <span class="close-popover" style="float: ${popoverDir === 'rtl' ? 'left' : 'right'} !important; cursor: pointer;">×</span>
+            <span style="font-size: 13px; font-weight: bold; opacity: 0.7;">${headerLabel}</span>
+          </h3>
+          <div class="popover-body" style="direction: ${popoverDir}; padding: 12px;"></div>
+        </div>`
+    });
+    
+    el.addEventListener('shown.bs.popover', function () {
+      if (activePopover && activePopover !== popover) {
+        activePopover.hide();
+      }
+      activePopover = popover;
+      
+      setTimeout(() => {
+        const closeBtn = document.querySelector('.popover.show .close-popover');
+        if (closeBtn) {
+          closeBtn.onclick = (e) => {
+            e.stopPropagation();
+            popover.hide();
+            activePopover = null;
+          };
+        }
+      }, 50);
+    });
+  });
+}
+
+function goToPage(pageIndex, direction = 'none') {
+  if (activePopover) { activePopover.hide(); activePopover = null; }
+  if(pageIndex < 0) {
+    currentSurahIndex > 0 ? loadSurah(currentSurahIndex - 1, 'last', direction) : loadSurah(quranData.surahs.length - 1, 'last', direction);
+    return;
+  }
+  if(pageIndex >= totalPages) {
+    currentSurahIndex < quranData.surahs.length - 1 ? loadSurah(currentSurahIndex + 1, 0, direction) : loadSurah(0, 0, direction);
+    return;
+  }
+  versesContainer.classList.remove('flipping-forward', 'flipping-backward');
+  void versesContainer.offsetWidth; 
+  if(direction === 'forward') versesContainer.classList.add('flipping-forward');
+  else if(direction === 'backward') versesContainer.classList.add('flipping-backward');
+  setTimeout(() => {
+    currentPage = pageIndex;
+    displayVerses(pageIndex);
+    updateProgressBar();
+    pageSelectButton.textContent = "Page " + (currentPage + 1) + " ▼";
+    document.body.classList.toggle('not-first-page', currentPage !== 0);
+    updateURL(quranData.surahs[currentSurahIndex].number, currentPage);
+  }, direction === 'none' ? 0 : 110);
+}
+
+function updateProgressBar() {
+  document.getElementById('progressBar').style.width = ((currentPage + 1) / totalPages * 100) + "%";
+}
+
+function updateZoom(newSize) {
+  if (activePopover) { activePopover.hide(); activePopover = null; }
+  currentFontSize = newSize;
+  document.documentElement.style.setProperty('--current-font-size', currentFontSize);
+  displayVerses(currentPage);
+}
+
+document.getElementById('fontIncrease').onclick = () => { if(currentFontSize < 45) updateZoom(currentFontSize + 2); };
+document.getElementById('fontDecrease').onclick = () => { if(currentFontSize > 14) updateZoom(currentFontSize - 2); };
+
+document.addEventListener('keydown', (e) => {
+  if (!!document.querySelector('.popover.show')) return;
+  if (e.key === "ArrowRight") goToPage(currentPage - 1, 'backward');
+  else if (e.key === "ArrowLeft") goToPage(currentPage + 1, 'forward');
+});
+
+function handleStart(e, x) { if (e.target.closest('.popover') || e.target.closest('#header')) { isDragging = false; return; } startX = x; isDragging = true; }
+function handleMove(x) { if (!isDragging) return; const diff = x - startX; versesContainer.style.transform = `perspective(1000px) rotateY(${(diff / window.innerWidth) * -15}deg)`; }
+function handleEnd(x) { if (!isDragging) return; isDragging = false; versesContainer.style.transform = ''; const diff = x - startX; if (Math.abs(diff) > minSwipeDist) { diff > 0 ? goToPage(currentPage + 1, 'forward') : goToPage(currentPage - 1, 'backward'); } }
+
+document.addEventListener('touchstart', e => handleStart(e, e.touches[0].clientX), {passive: true});
+document.addEventListener('touchmove', e => handleMove(e.touches[0].clientX), {passive: true});
+document.addEventListener('touchend', e => handleEnd(e.changedTouches[0].clientX));
+document.addEventListener('mousedown', e => handleStart(e, e.clientX));
+document.addEventListener('mousemove', e => handleMove(e.clientX));
+document.addEventListener('mouseup', e => handleEnd(e.clientX));
+
+document.getElementById('nextPage').onclick = () => goToPage(currentPage + 1, 'forward');
+document.getElementById('prevPage').onclick = () => goToPage(currentPage - 1, 'backward');
+
+// Translation toggle button
+document.getElementById('translateBtn').onclick = () => {
+  if (activePopover) { activePopover.hide(); activePopover = null; }
+  showTranslation = !showTranslation;
+  displayVerses(currentPage);
+  
+  // Visual feedback on button
+  const btn = document.getElementById('translateBtn');
+  btn.style.fontWeight = showTranslation ? 'bold' : 'normal';
+  btn.style.opacity = showTranslation ? '1' : '0.7';
+};
+
+surahSelectButton.onclick = (e) => { e.stopPropagation(); pageSelectOptions.style.display = 'none'; surahSelectOptions.style.display = surahSelectOptions.style.display === 'block' ? 'none' : 'block'; };
+pageSelectButton.onclick = (e) => { e.stopPropagation(); surahSelectOptions.style.display = 'none'; pageSelectOptions.style.display = pageSelectOptions.style.display === 'block' ? 'none' : 'block'; };
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.popover') && !e.target.closest('[data-bs-toggle="popover"]')) { if (activePopover) { activePopover.hide(); activePopover = null; } }
+  surahSelectOptions.style.display = 'none'; pageSelectOptions.style.display = 'none';
+});
+
+// Theme toggle with SVG icons
+document.getElementById('themeBtn').onclick = () => {
+  document.body.classList.toggle('dark');
+  const iconPath = document.getElementById('theme-icon-path');
+  
+  // Moon icon path (for light mode - clicking will switch to dark)
+  const moonPath = "M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z";
+  
+  // Sun icon path (for dark mode - clicking will switch to light)
+  const sunPath = "M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z";
+  
+  if (document.body.classList.contains('dark')) {
+    iconPath.setAttribute('d', sunPath);
+  } else {
+    iconPath.setAttribute('d', moonPath);
+  }
+};
+
+function initFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const surahNum = parseInt(params.get('surah'));
+  const pageNum = parseInt(params.get('page'));
+  let sIndex = 0; let pIndex = 0;
+  if (!isNaN(surahNum)) { const foundIndex = quranData.surahs.findIndex(s => s.number === surahNum); if (foundIndex !== -1) sIndex = foundIndex; }
+  if (!isNaN(pageNum)) pIndex = pageNum - 1;
+  initSurahDropdown(); loadSurah(sIndex, pIndex);
+}
+
+initFromURL();
+
+function getTelegramHeight() {
+  const tg = window.Telegram?.WebApp;
+  
+  if (tg && tg.viewportHeight) {
+    return tg.viewportHeight;
+  }
+  
+  return window.innerHeight;
+}
+
+function updateViewportHeight() {
+  const height = getTelegramHeight();
+  document.documentElement.style.setProperty('--viewport-height', `${height}px`);
+}
+
+async function initTelegramApp() {
+  const tg = window.Telegram?.WebApp;
+  
+  if (!tg) return;
+  
+  try {
+    const isTMA = tg.initData !== '';
+    
+    if (isTMA) {
+      tg.expand();
+      
+      if (tg.isFullscreen !== undefined) {
+        tg.requestFullscreen();
+      }
+
+      updateViewportHeight();
+      
+      tg.onEvent('viewportChanged', () => {
+        updateViewportHeight();
+      });
+
+      tg.ready();
+    }
+  } catch (error) {
+    // Silent error handling
+  }
+}
+
+if (window.Telegram?.WebApp) {
+  initTelegramApp();
+} else {
+  window.addEventListener('load', initTelegramApp);
+}
+
+if (window.Telegram?.WebApp?.initData) {
+  document.body.classList.add('is-telegram');
+}
+
+window.addEventListener('resize', updateViewportHeight);
+updateViewportHeight();
+
+</script>
+</body>
+</html>
