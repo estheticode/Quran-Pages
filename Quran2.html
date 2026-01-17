@@ -266,7 +266,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: calc(80px + env(safe-area-inset-top));
+      height: calc(var(--viewport-height, 100vh) * 0.15); /* 15% of viewport height */
       background: #F4E4C1; /* light mode */
       z-index: 9998;
       pointer-events: none;
@@ -572,27 +572,46 @@ function initFromURL() {
 
 initFromURL();
 
+function getTelegramHeight() {
+  const tg = window.Telegram?.WebApp;
+  
+  if (tg && tg.viewportHeight) {
+    // Use Telegram's viewport height when available
+    return tg.viewportHeight;
+  }
+  
+  // Fallback to standard window height
+  return window.innerHeight;
+}
 
-// Telegram Mini App Initialization
+function updateViewportHeight() {
+  const height = getTelegramHeight();
+  document.documentElement.style.setProperty('--viewport-height', `${height}px`);
+}
+
 async function initTelegramApp() {
   const tg = window.Telegram?.WebApp;
   
   if (!tg) return;
   
   try {
-    // Check if running inside Telegram
     const isTMA = tg.initData !== '';
     
     if (isTMA) {
-      // Expand the viewport to full height
       tg.expand();
       
-      // Request fullscreen if available
       if (tg.isFullscreen !== undefined) {
         tg.requestFullscreen();
       }
 
-      // Tell Telegram the app is ready
+      // Set initial viewport height
+      updateViewportHeight();
+      
+      // Listen for viewport changes (keyboard, orientation, etc.)
+      tg.onEvent('viewportChanged', () => {
+        updateViewportHeight();
+      });
+
       tg.ready();
     }
   } catch (error) {
@@ -600,16 +619,22 @@ async function initTelegramApp() {
   }
 }
 
-// Initialize Telegram app
-if (window.Telegram?.WebApp) {
-  initTelegramApp();
-} else {
-  // Wait for Telegram script to load if not ready yet
-  window.addEventListener('load', initTelegramApp);
-}
-if (window.Telegram?.WebApp?.initData) {
-  document.body.classList.add('is-telegram');
-}
+  // Initialize Telegram app
+  if (window.Telegram?.WebApp) {
+    initTelegramApp();
+  } else {
+    window.addEventListener('load', initTelegramApp);
+  }
+
+  if (window.Telegram?.WebApp?.initData) {
+    document.body.classList.add('is-telegram');
+  }
+
+  // Also update on window resize as fallback
+  window.addEventListener('resize', updateViewportHeight);
+
+  // Set initial value immediately
+  updateViewportHeight();
 
 </script>
 </body>
