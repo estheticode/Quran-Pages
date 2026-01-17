@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- theme button change -->
+<!-- translate + tafsir-->
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
@@ -64,7 +64,7 @@
     justify-content: center;
     box-sizing: border-box;
   }
-  #buttonsContainer button { font-weight: bold; }
+  #buttonsContainer #navButtons button { font-weight: bold; }
 
   /* DARK MODE UNIFIED BUTTONS */
   body.dark #navButtons button, 
@@ -125,12 +125,22 @@
     position: relative; 
     will-change: transform, opacity, filter;
     transform-origin: center;
-    user-select: none; 
+    user-select: none;
+  }
+  
+  /* When showing translation, reverse the visual order for proper LTR reading */
+  #versesContainer.translation-mode {
+    direction: ltr;
+    text-align: left;
   }
 
   .verse { font-size: 24px; margin: 12px 0; display: inline; position: relative; }
   .verse-number { color: green; font-weight: bold; margin-left: 8px; cursor: pointer; display: inline-block; }
   body.dark .verse-number { color: #4ade80; }
+  
+  /* LTR mode: verse number on left side */
+  .verse.ltr-mode { direction: ltr; }
+  .verse.ltr-mode .verse-number { margin-left: 0; margin-right: 8px; }
 
   .popover {
     max-width: 400px;
@@ -231,7 +241,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.11));
+      height: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.10));
       background: #F4E4C1;
       z-index: 9998;
       pointer-events: none;
@@ -246,11 +256,11 @@
     }
 
     body.is-telegram #header {
-      top: max(calc(86px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.11 + 6px));
+      top: max(calc(86px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.10 + 6px));
     }
 
     body.is-telegram #progressBarContainer {
-      top: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.11));
+      top: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.10));
     }
   }
   
@@ -288,6 +298,7 @@
       </button>
     </div>
     <div id="navButtons">
+      <button id="translateBtn" title="Toggle Translation">T</button>
       <button id="nextPage">◀</button>
       <button id="prevPage">▶</button> 
     </div>
@@ -301,7 +312,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="quranData.js"></script>
-
+<script src="tafsirData.js"></script>
 <script>
 const maxVersesPerPage = 10;
 let currentSurahIndex = 0;
@@ -318,7 +329,8 @@ const pageSelectButton = document.getElementById('pageSelectButton');
 const pageSelectOptions = document.getElementById('pageSelectOptions');
 
 let startX = 0, isDragging = false;
-const minSwipeDist = 85;
+const minSwipeDist = 70;
+let showTranslation = false; // Track translation mode
 
 function initSurahDropdown() {
   surahSelectOptions.innerHTML = '';
@@ -332,6 +344,12 @@ function initSurahDropdown() {
     });
     surahSelectOptions.appendChild(option);
   });
+}
+
+function getTafsirLink(surahNumber, verseNumber) {
+  if (!tafsirData || !tafsirData.tafsirs) return null;
+  const key = `${surahNumber}_${verseNumber}`;
+  return tafsirData.tafsirs[key] || null;
 }
 
 function updateURL(surahNum, pageNum) {
@@ -370,6 +388,13 @@ function initPageDropdown() {
 function displayVerses(pageIndex) {
   versesContainer.innerHTML = "";
   
+  // Add/remove class to container based on mode
+  if (showTranslation) {
+    versesContainer.classList.add('translation-mode');
+  } else {
+    versesContainer.classList.remove('translation-mode');
+  }
+  
   const currentSurah = quranData.surahs[currentSurahIndex];
   const transDir = currentSurah.translation_dir || quranData.translation_dir || 'ltr';
   
@@ -392,33 +417,70 @@ function displayVerses(pageIndex) {
     
     const safeTranslation = verse.translation
       .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;'); 
+      .replace(/'/g, '&#39;');
     
-    const styledTranslation = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: ${transDir};'>${safeTranslation}</span>`;
+    const safeArabic = verse.arabic
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
     
-    verseDiv.innerHTML = `${verse.arabic} <span class="verse-number" 
+    // Determine what to show in main view vs popover based on mode
+    let mainText, popoverContent;
+    
+    if (showTranslation) {
+      // Show translation as main text, Arabic in popover
+      mainText = verse.translation+'. ';
+      verseDiv.classList.add('ltr-mode');
+      popoverContent = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: rtl;'>${safeArabic}</span>`;
+
+      // Add info icon only if translation mode is ON and tafsir exists
+      // Get tafsir link if available
+      const currentSurahNumber = currentSurah.number;
+      const tafsirLink = getTafsirLink(currentSurahNumber, verseNum);
+      let infoIconHTML = '';
+      if (showTranslation && tafsirLink) {
+        infoIconHTML = `<a href="${tafsirLink}" target="_blank" style="margin-left:4px; font-size:22px; color:green; text-decoration:none;">ℹ️</a>`;
+      }
+      // For LTR: verse number BEFORE the text
+      verseDiv.innerHTML = `<span class="verse-number" 
         data-bs-toggle="popover" 
         data-bs-trigger="click" 
         data-bs-placement="auto" 
-        data-bs-content="${styledTranslation}" 
+        data-bs-content="${popoverContent}" 
+        data-index="${verseNum}">[${verseNum}]${infoIconHTML}</span> ${mainText}`;
+    } else {
+      // Show Arabic as main text, translation in popover
+      mainText = verse.arabic;
+      popoverContent = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: ${transDir};'>${safeTranslation}</span>`;
+      
+      // For RTL: verse number AFTER the text
+      verseDiv.innerHTML = `${mainText} <span class="verse-number" 
+        data-bs-toggle="popover" 
+        data-bs-trigger="click" 
+        data-bs-placement="auto" 
+        data-bs-content="${popoverContent}" 
         data-index="${verseNum}">[${verseNum}]</span>`;
+    }
 
     versesContainer.appendChild(verseDiv);
   });
 
   document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+    const popoverDir = showTranslation ? 'rtl' : transDir;
+    const popoverAlign = showTranslation ? 'right' : (transDir === 'rtl' ? 'right' : 'left');
+    const headerLabel = showTranslation ? 'Arabic' : 'Translation';
+    
     const popover = new bootstrap.Popover(el, {
       html: true,
       sanitize: false,
       container: 'body',
       template: `
-        <div class="popover" role="tooltip" style="direction: ${transDir}; text-align: ${transDir === 'rtl' ? 'right' : 'left'};">
+        <div class="popover" role="tooltip" style="direction: ${popoverDir}; text-align: ${popoverAlign};">
           <div class="popover-arrow"></div>
           <h3 class="popover-header" style="padding: 8px 12px;">
-            <span class="close-popover" style="float: ${transDir === 'rtl' ? 'left' : 'right'} !important; cursor: pointer;">×</span>
-            <span style="font-size: 13px; font-weight: bold; opacity: 0.7;">Translation</span>
+            <span class="close-popover" style="float: ${popoverDir === 'rtl' ? 'left' : 'right'} !important; cursor: pointer;">×</span>
+            <span style="font-size: 13px; font-weight: bold; opacity: 0.7;">${headerLabel}</span>
           </h3>
-          <div class="popover-body" style="direction: ${transDir}; padding: 12px;"></div>
+          <div class="popover-body" style="direction: ${popoverDir}; padding: 12px;"></div>
         </div>`
     });
     
@@ -440,7 +502,11 @@ function displayVerses(pageIndex) {
       }, 50);
     });
   });
+
 }
+
+
+
 
 function goToPage(pageIndex, direction = 'none') {
   if (activePopover) { activePopover.hide(); activePopover = null; }
@@ -499,6 +565,18 @@ document.addEventListener('mouseup', e => handleEnd(e.clientX));
 
 document.getElementById('nextPage').onclick = () => goToPage(currentPage + 1, 'forward');
 document.getElementById('prevPage').onclick = () => goToPage(currentPage - 1, 'backward');
+
+// Translation toggle button
+document.getElementById('translateBtn').onclick = () => {
+  if (activePopover) { activePopover.hide(); activePopover = null; }
+  showTranslation = !showTranslation;
+  displayVerses(currentPage);
+  
+  // Visual feedback on button
+  const btn = document.getElementById('translateBtn');
+  btn.style.fontWeight = showTranslation ? 'bold' : 'normal';
+  btn.style.opacity = showTranslation ? '1' : '0.7';
+};
 
 surahSelectButton.onclick = (e) => { e.stopPropagation(); pageSelectOptions.style.display = 'none'; surahSelectOptions.style.display = surahSelectOptions.style.display === 'block' ? 'none' : 'block'; };
 pageSelectButton.onclick = (e) => { e.stopPropagation(); surahSelectOptions.style.display = 'none'; pageSelectOptions.style.display = pageSelectOptions.style.display === 'block' ? 'none' : 'block'; };
