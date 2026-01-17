@@ -283,6 +283,18 @@
       padding-top: max(250px, calc(25vh + 80px + env(safe-area-inset-top)));
     }
   }
+  #fontIncrease,
+  #fontDecrease {
+    font-weight: 550;
+    font-size: 20px;
+    transition: font-weight 0.15s ease, opacity 0.15s ease;
+  }
+
+  #headerSpacer {
+  width: 100%;
+  margin-bottom: -10px;
+  }
+
 </style>
 </head>
 <body>
@@ -298,6 +310,10 @@
     <div class="dropdown-container">
       <div class="dropdown-button" id="pageSelectButton">Page 1 ▼</div>
       <div class="dropdown-options" id="pageSelectOptions"></div>
+    </div>
+    <div class="dropdown-container">
+      <div class="dropdown-button" id="languageSelectButton">Language ▼</div>
+      <div class="dropdown-options" id="languageSelectOptions"></div>
     </div>
   </div>
 
@@ -318,16 +334,24 @@
     </div>
   </div>
 </div>
-
+<div id="headerSpacer"></div>
 <h1 id="surahName">الأعلى</h1>
 <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
 
 <div id="versesContainer"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="quranData.js"></script>
-<script src="tafsirData.js"></script>
+<!-- <script src="data/en/quranData.js"></script>
+<script src="data/en/tafsirData.js"></script> -->
+<script src="languages.js"></script> 
+
 <script>
+
+let quranData = null;
+let tafsirData = null;
+
+
+
 const maxVersesPerPage = 10;
 let currentSurahIndex = 0;
 let currentPage = 0;
@@ -346,19 +370,7 @@ let startX = 0, isDragging = false;
 const minSwipeDist = 70;
 let showTranslation = false; // Track translation mode
 
-function initSurahDropdown() {
-  surahSelectOptions.innerHTML = '';
-  quranData.surahs.forEach((surah, index) => {
-    const option = document.createElement('div');
-    option.style.padding = "8px 12px";
-    option.textContent = `${surah.number}. ${surah.name}`;
-    option.addEventListener('click', () => { 
-      loadSurah(index, 0, 'forward'); 
-      surahSelectOptions.style.display = 'none'; 
-    });
-    surahSelectOptions.appendChild(option);
-  });
-}
+
 
 function getTafsirLink(surahNumber, verseNumber) {
   if (!tafsirData || !tafsirData.tafsirs) return null;
@@ -453,13 +465,13 @@ function displayVerses(pageIndex) {
       
       let infoIconHTML = '';
       if (showTranslation && tafsirLink) {
-      const isTelegram = !!window.Telegram?.WebApp?.initData;
-      infoIconHTML = `<a href="${tafsirLink}" 
-        ${isTelegram ? `onclick="window.Telegram.WebApp.openLink('${tafsirLink}');"` : 'target="_blank"'} 
-        style="margin-left:4px; font-size:1em; color:green; font-weight:bold; text-decoration:none; cursor:pointer; display:inline-block; position:relative; top:2px;">
-        ℹ️
-      </a>`;
-    }
+        infoIconHTML = `<a href="${tafsirLink}" 
+          target="_blank" 
+          style="margin-left:4px; font-size:1em; color:green; font-weight:bold; text-decoration:none; cursor:pointer; display:inline-block; position:relative; top:1px;">
+          ℹ️
+        </a>`;
+      }
+
 
 
       // For LTR: verse number BEFORE the text
@@ -565,8 +577,33 @@ function updateZoom(newSize) {
   displayVerses(currentPage);
 }
 
-document.getElementById('fontIncrease').onclick = () => { if(currentFontSize < 45) updateZoom(currentFontSize + 2); };
-document.getElementById('fontDecrease').onclick = () => { if(currentFontSize > 14) updateZoom(currentFontSize - 2); };
+// document.getElementById('fontIncrease').onclick = () => { if(currentFontSize < 45) updateZoom(currentFontSize + 2); };
+// document.getElementById('fontDecrease').onclick = () => { if(currentFontSize > 14) updateZoom(currentFontSize - 2); };
+
+function updateFontButtons() {
+  const inc = document.getElementById('fontIncrease');
+  const dec = document.getElementById('fontDecrease');
+
+  inc.style.fontWeight = currentFontSize >= 45 ? '400' : '800';
+  dec.style.fontWeight = currentFontSize <= 14 ? '400' : '800';
+
+  inc.style.opacity = currentFontSize >= 45 ? '0.5' : '1';
+  dec.style.opacity = currentFontSize <= 14 ? '0.5' : '1';
+}
+
+document.getElementById('fontIncrease').onclick = () => {
+  if (currentFontSize < 45) updateZoom(currentFontSize + 2);
+  updateFontButtons();
+};
+
+document.getElementById('fontDecrease').onclick = () => {
+  if (currentFontSize > 14) updateZoom(currentFontSize - 2);
+  updateFontButtons();
+};
+
+// initialize on page load
+updateFontButtons();
+
 
 document.addEventListener('keydown', (e) => {
   if (!!document.querySelector('.popover.show')) return;
@@ -575,7 +612,19 @@ document.addEventListener('keydown', (e) => {
 });
 
 function handleStart(e, x) { if (e.target.closest('.popover') || e.target.closest('#header')) { isDragging = false; return; } startX = x; isDragging = true; }
-function handleMove(x) { if (!isDragging) return; const diff = x - startX; versesContainer.style.transform = `perspective(1000px) rotateY(${(diff / window.innerWidth) * -15}deg)`; }
+function handleMove(x) {
+  if (!isDragging) return;
+
+  const diff = x - startX;
+  const progress = diff / window.innerWidth;
+  const angle = Math.max(-35, Math.min(35, progress * 35));
+
+  // LEFT → RIGHT  => lift LEFT edge
+  // RIGHT → LEFT  => lift RIGHT edge
+  versesContainer.style.transformOrigin = diff > 0 ? 'left center' : 'right center';
+  versesContainer.style.transform =
+    `perspective(1000px) rotateY(${angle}deg)`;
+}
 function handleEnd(x) { if (!isDragging) return; isDragging = false; versesContainer.style.transform = ''; const diff = x - startX; if (Math.abs(diff) > minSwipeDist) { diff > 0 ? goToPage(currentPage + 1, 'forward') : goToPage(currentPage - 1, 'backward'); } }
 
 document.addEventListener('touchstart', e => handleStart(e, e.touches[0].clientX), {passive: true});
@@ -626,6 +675,21 @@ document.getElementById('themeBtn').onclick = () => {
   }
 };
 
+
+
+function getLanguageFullName(code) {
+  if (typeof Intl.DisplayNames === 'function') {
+    try {
+      // Use English locale for the language names themselves
+      const dn = new Intl.DisplayNames(['en'], { type: 'language' });
+      return dn.of(code) || code.toUpperCase();
+    } catch {
+      return code.toUpperCase();
+    }
+  }
+  return code.toUpperCase();
+}
+
 function initFromURL() {
   const params = new URLSearchParams(window.location.search);
   const surahNum = parseInt(params.get('surah'));
@@ -636,7 +700,7 @@ function initFromURL() {
   initSurahDropdown(); loadSurah(sIndex, pIndex);
 }
 
-initFromURL();
+
 
 function getTelegramHeight() {
   const tg = window.Telegram?.WebApp;
@@ -693,6 +757,154 @@ if (window.Telegram?.WebApp?.initData) {
 
 window.addEventListener('resize', updateViewportHeight);
 updateViewportHeight();
+updateFontButtons();
+
+const languageSelectButton = document.getElementById('languageSelectButton');
+const languageSelectOptions = document.getElementById('languageSelectOptions');
+
+function getBrowserLanguageCode() {
+  const raw = navigator.language || navigator.userLanguage || 'en';
+  return raw.split('-')[0].toLowerCase();
+}
+
+function getInitialLanguage() {
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  if (urlLang && supportedLanguageCodes.includes(urlLang.toLowerCase())) {
+    return urlLang.toLowerCase();
+  }
+  return supportedLanguageCodes.includes(getBrowserLanguageCode())
+    ? getBrowserLanguageCode()
+    : 'en';
+}
+
+
+function initLanguageDropdown() {
+  languageSelectOptions.innerHTML = '';
+
+  supportedLanguageCodes.forEach(code => {
+    const option = document.createElement('div');
+    option.textContent = getLanguageFullName(code); // full name via Intl
+    option.dataset.code = code;
+    option.style.padding = "8px 12px";
+
+    option.addEventListener('click', () => {
+      setLanguage(code);
+      languageSelectButton.textContent = getLanguageFullName(code) + " ▼";
+      languageSelectOptions.style.display = 'none';
+    });
+
+    languageSelectOptions.appendChild(option);
+  });
+
+  // Set initial button text
+  const initialCode = getInitialLanguage();
+  languageSelectButton.textContent = getLanguageFullName(initialCode) + " ▼";
+}
+
+
+// Toggle dropdown visibility
+languageSelectButton.onclick = (e) => {
+  e.stopPropagation();
+  // hide other dropdowns
+  surahSelectOptions.style.display = 'none';
+  pageSelectOptions.style.display = 'none';
+  languageSelectOptions.style.display = languageSelectOptions.style.display === 'block' ? 'none' : 'block';
+};
+
+// Hide dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.dropdown-container')) {
+    languageSelectOptions.style.display = 'none';
+  }
+});
+
+function initSurahDropdown() {
+  surahSelectOptions.innerHTML = '';
+  quranData.surahs.forEach((surah, index) => {
+    const option = document.createElement('div');
+    option.style.padding = "8px 12px";
+    option.textContent = `${surah.number}. ${surah.name}`;
+    option.addEventListener('click', () => { 
+      loadSurah(index, 0, 'forward'); 
+      surahSelectOptions.style.display = 'none'; 
+    });
+    surahSelectOptions.appendChild(option);
+  });
+}
+
+function loadLanguageData(lang) {
+  return new Promise((resolve, reject) => {
+    // Remove old scripts
+    document.querySelectorAll('script[data-lang]').forEach(s => s.remove());
+
+    // Clear old data
+    quranData = null;
+    tafsirData = null;
+
+    const quranScript = document.createElement('script');
+    quranScript.src = `data/${lang}/quranData.js`;
+    quranScript.dataset.lang = lang;
+
+    const tafsirScript = document.createElement('script');
+    // tafsirScript.src = `data/${lang}/tafsirData.js`;
+    tafsirScript.src = `data/en/tafsirData.js`;
+    tafsirScript.dataset.lang = lang;
+
+    quranScript.onload = () => {
+      tafsirScript.onload = () => resolve();
+      tafsirScript.onerror = reject;
+      document.body.appendChild(tafsirScript);
+    };
+
+    quranScript.onerror = reject;
+    document.body.appendChild(quranScript);
+  });
+}
+
+
+
+async function setLanguage(lang) {
+  if (!lang || !supportedLanguageCodes.includes(lang)) lang = 'en';
+
+  await loadLanguageData(lang);
+
+  // Bind globals created by script
+  quranData = window[`${lang}QuranData`] || window.quranData;
+  // tafsirData = window[`${lang}TafsirData`] || window.tafsirData;
+  tafsirData = window[`enTafsirData`] || window.tafsirData;
+
+
+  document.body.dir = quranData.translation_dir || 'ltr';
+
+  initSurahDropdown();
+  initFromURL();
+  loadSurah(0, 0);
+
+  const params = new URLSearchParams(location.search);
+  params.set('lang', lang);
+  history.replaceState({}, '', `${location.pathname}?${params}`);
+}
+
+
+
+initLanguageDropdown();
+// On page load: read lang from URL
+const urlParams = new URLSearchParams(window.location.search);
+const initialLang = urlParams.get('lang') || 'en';
+setLanguage(initialLang);
+
+// initFromURL();
+
+function updateHeaderSpacer() {
+  const header = document.getElementById('header');
+  const spacer = document.getElementById('headerSpacer');
+  if (header && spacer) {
+    spacer.style.height = (header.offsetHeight - 80) + 'px';
+  }
+}
+
+window.addEventListener('load', updateHeaderSpacer);
+window.addEventListener('resize', updateHeaderSpacer);
 
 </script>
 </body>
