@@ -452,12 +452,15 @@ function displayVerses(pageIndex) {
       const tafsirLink = getTafsirLink(currentSurahNumber, verseNum);
       
       let infoIconHTML = '';
-        if (showTranslation && tafsirLink) {
-        const isTelegram = !!window.Telegram?.WebApp?.initData;
-        infoIconHTML = `<a href="${tafsirLink}" 
-          ${isTelegram ? 'onclick="window.Telegram.WebApp.openLink(\'' + tafsirLink + '\'); return false;"' : 'target="_blank"'} 
-          style="margin-left:4px; top:3px; color:green; font-weight:bold; text-decoration:none; cursor:pointer;">ℹ️</a>`;
-      }
+      if (showTranslation && tafsirLink) {
+      const isTelegram = !!window.Telegram?.WebApp?.initData;
+      infoIconHTML = `<a href="${tafsirLink}" 
+        ${isTelegram ? `onclick="window.Telegram.WebApp.openLink('${tafsirLink}');"` : 'target="_blank"'} 
+        style="margin-left:4px; font-size:1em; color:green; font-weight:bold; text-decoration:none; cursor:pointer; display:inline-block; position:relative; top:2px;">
+        ℹ️
+      </a>`;
+    }
+
 
       // For LTR: verse number BEFORE the text
       verseDiv.innerHTML = `<span class="verse-number" 
