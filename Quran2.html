@@ -137,7 +137,21 @@
   .verse { font-size: 24px; margin: 12px 0; display: inline; position: relative; }
   .verse-number { color: green; font-weight: bold; margin-left: 8px; cursor: pointer; display: inline-block; }
   body.dark .verse-number { color: #4ade80; }
-  
+  /* Link inside verse-number inherits the same style */
+  .verse-number a {
+    color: inherit;
+    font-size: 1.1em;       
+    font-weight: inherit; 
+    font-size: inherit;   
+    margin-left: 8px;     
+    text-decoration: none;
+    cursor: pointer;      
+  }
+  body.dark .verse-number a {
+  color: inherit;
+  font-size: 1.1em; 
+  }
+
   /* LTR mode: verse number on left side */
   .verse.ltr-mode { direction: ltr; }
   .verse.ltr-mode .verse-number { margin-left: 0; margin-right: 8px; }
@@ -436,10 +450,18 @@ function displayVerses(pageIndex) {
       // Get tafsir link if available
       const currentSurahNumber = currentSurah.number;
       const tafsirLink = getTafsirLink(currentSurahNumber, verseNum);
+      
       let infoIconHTML = '';
       if (showTranslation && tafsirLink) {
-        infoIconHTML = `<a href="${tafsirLink}" target="_blank" style="margin-left:4px; font-size:22px; color:green; text-decoration:none;">ℹ️</a>`;
-      }
+      const isTelegram = !!window.Telegram?.WebApp?.initData;
+      infoIconHTML = `<a href="${tafsirLink}" 
+        ${isTelegram ? `onclick="window.Telegram.WebApp.openLink('${tafsirLink}');"` : 'target="_blank"'} 
+        style="margin-left:4px; font-size:1em; color:green; font-weight:bold; text-decoration:none; cursor:pointer; display:inline-block; position:relative; top:2px;">
+        ℹ️
+      </a>`;
+    }
+
+
       // For LTR: verse number BEFORE the text
       verseDiv.innerHTML = `<span class="verse-number" 
         data-bs-toggle="popover" 
