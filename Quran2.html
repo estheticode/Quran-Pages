@@ -283,6 +283,12 @@
       padding-top: max(250px, calc(25vh + 80px + env(safe-area-inset-top)));
     }
   }
+  #fontIncrease,
+  #fontDecrease {
+    font-weight: 550;
+    font-size: 20px;
+    transition: font-weight 0.15s ease, opacity 0.15s ease;
+  }
 </style>
 </head>
 <body>
@@ -565,8 +571,33 @@ function updateZoom(newSize) {
   displayVerses(currentPage);
 }
 
-document.getElementById('fontIncrease').onclick = () => { if(currentFontSize < 45) updateZoom(currentFontSize + 2); };
-document.getElementById('fontDecrease').onclick = () => { if(currentFontSize > 14) updateZoom(currentFontSize - 2); };
+// document.getElementById('fontIncrease').onclick = () => { if(currentFontSize < 45) updateZoom(currentFontSize + 2); };
+// document.getElementById('fontDecrease').onclick = () => { if(currentFontSize > 14) updateZoom(currentFontSize - 2); };
+
+function updateFontButtons() {
+  const inc = document.getElementById('fontIncrease');
+  const dec = document.getElementById('fontDecrease');
+
+  inc.style.fontWeight = currentFontSize >= 45 ? '400' : '800';
+  dec.style.fontWeight = currentFontSize <= 14 ? '400' : '800';
+
+  inc.style.opacity = currentFontSize >= 45 ? '0.5' : '1';
+  dec.style.opacity = currentFontSize <= 14 ? '0.5' : '1';
+}
+
+document.getElementById('fontIncrease').onclick = () => {
+  if (currentFontSize < 45) updateZoom(currentFontSize + 2);
+  updateFontButtons();
+};
+
+document.getElementById('fontDecrease').onclick = () => {
+  if (currentFontSize > 14) updateZoom(currentFontSize - 2);
+  updateFontButtons();
+};
+
+// initialize on page load
+updateFontButtons();
+
 
 document.addEventListener('keydown', (e) => {
   if (!!document.querySelector('.popover.show')) return;
@@ -575,7 +606,19 @@ document.addEventListener('keydown', (e) => {
 });
 
 function handleStart(e, x) { if (e.target.closest('.popover') || e.target.closest('#header')) { isDragging = false; return; } startX = x; isDragging = true; }
-function handleMove(x) { if (!isDragging) return; const diff = x - startX; versesContainer.style.transform = `perspective(1000px) rotateY(${(diff / window.innerWidth) * -15}deg)`; }
+function handleMove(x) {
+  if (!isDragging) return;
+
+  const diff = x - startX;
+  const progress = diff / window.innerWidth;
+  const angle = Math.max(-35, Math.min(35, progress * 35));
+
+  // LEFT → RIGHT  => lift LEFT edge
+  // RIGHT → LEFT  => lift RIGHT edge
+  versesContainer.style.transformOrigin = diff > 0 ? 'left center' : 'right center';
+  versesContainer.style.transform =
+    `perspective(1000px) rotateY(${angle}deg)`;
+}
 function handleEnd(x) { if (!isDragging) return; isDragging = false; versesContainer.style.transform = ''; const diff = x - startX; if (Math.abs(diff) > minSwipeDist) { diff > 0 ? goToPage(currentPage + 1, 'forward') : goToPage(currentPage - 1, 'backward'); } }
 
 document.addEventListener('touchstart', e => handleStart(e, e.touches[0].clientX), {passive: true});
@@ -693,7 +736,7 @@ if (window.Telegram?.WebApp?.initData) {
 
 window.addEventListener('resize', updateViewportHeight);
 updateViewportHeight();
-
+updateFontButtons();
 </script>
 </body>
 </html>
