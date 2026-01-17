@@ -266,7 +266,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: calc(var(--viewport-height, 100vh) * 0.15); /* 15% of viewport height */
+      height: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.12));
       background: #F4E4C1; /* light mode */
       z-index: 9998;
       pointer-events: none;
@@ -280,12 +280,12 @@
       padding-top: max(230px, calc(20vh + 100px + env(safe-area-inset-top)));
     }
 
-    body.is-telegram #progressBarContainer {
-      top: calc(80px + env(safe-area-inset-top));
+    body.is-telegram #header {
+  top: max(calc(86px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.12 + 6px));
     }
 
-    body.is-telegram #header {
-      top: calc(86px + env(safe-area-inset-top));
+    body.is-telegram #progressBarContainer {
+      top: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.12));
     }
   }
   
