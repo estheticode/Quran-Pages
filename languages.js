@@ -1,0 +1,1 @@
+const supportedLanguageCodes = ['en', 'ur'];
