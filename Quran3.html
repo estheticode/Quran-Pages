@@ -121,11 +121,11 @@
   body.not-first-page #surahName, body.not-first-page .bismillah { display: none; }
 
   #versesContainer { 
-    max-width: 100%; margin: 0 auto; line-height: 2;
-    position: relative; 
-    will-change: transform, opacity, filter;
-    transform-origin: center;
-    user-select: none;
+  max-width: 100%; margin: 0 auto; line-height: 2;
+  position: relative; 
+  will-change: transform, opacity, filter;
+  transform-origin: center;
+  user-select: none;
   }
   
   /* When showing translation, reverse the visual order for proper LTR reading */
@@ -241,6 +241,13 @@
   .flipping-forward { animation: pageFlipForward 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
   .flipping-backward { animation: pageFlipBackward 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
+
+
+  #versesContainer.text-selectable {
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
   @media (max-width: 500px) {
     h1#surahName { font-size: 32px; }
     .verse { font-size: 20px; }
@@ -295,6 +302,18 @@
   width: 100%;
   margin-bottom: -10px;
   }
+
+  /* Text selection styling for desktop */
+  #versesContainer ::selection {
+    background: rgba(76, 175, 80, 0.3);
+    color: inherit;
+  }
+
+  #versesContainer ::-moz-selection {
+    background: rgba(76, 175, 80, 0.3);
+    color: inherit;
+  }
+
 
 </style>
 </head>
@@ -622,21 +641,46 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === "ArrowLeft") goToPage(currentPage + 1, 'forward');
 });
 
-function handleStart(e, x) { if (e.target.closest('.popover') || e.target.closest('#header')) { isDragging = false; return; } startX = x; isDragging = true; }
+function handleStart(e, x) { 
+  // Prevent flipping if selecting text or dragging on header/popover
+  if (e.target.closest('.popover') || e.target.closest('#header')) { 
+    isDragging = false; 
+    return; 
+  }
+  
+  // Prevent flipping if text is being selected
+  const selection = window.getSelection();
+  if (selection.toString().length > 0) {
+    isDragging = false;
+    return;
+  }
+  
+  startX = x; 
+  isDragging = true; 
+}
+
 function handleMove(x) {
   if (!isDragging) return;
   
-  const diff = x - startX;
-  const progress = Math.abs(diff) / window.innerWidth;
-  // Optional: fade slightly during drag
-  versesContainer.style.opacity = Math.max(0.8, 1 - progress * 0.2);
+  // Stop if text is being selected
+  const selection = window.getSelection();
+  if (selection.toString().length > 0) {
+    isDragging = false;
+    return;
+  }
 }
 
 function handleEnd(x) { 
   if (!isDragging) return; 
   isDragging = false; 
-  versesContainer.style.opacity = '1'; // Reset opacity
+  versesContainer.style.opacity = '1';
   versesContainer.style.transform = ''; 
+  
+  // Stop if text is being selected
+  const selection = window.getSelection();
+  if (selection.toString().length > 0) {
+    return;
+  }
   
   const diff = x - startX; 
   if (Math.abs(diff) > minSwipeDist) { 
@@ -994,6 +1038,128 @@ function updateHeaderSpacer() {
 
 window.addEventListener('load', updateHeaderSpacer);
 window.addEventListener('resize', updateHeaderSpacer);
+
+
+
+// Text selection on second tap/click - select word and allow dragging
+let isSelectingText = false;
+let tapCount = 0;
+let tapTimer = null;
+let lastClickPos = null;
+
+function selectWordAtPosition(x, y) {
+  const range = document.caretRangeFromPoint(x, y);
+  if (!range) return;
+  
+  const selection = window.getSelection();
+  const textNode = range.startContainer;
+  
+  if (textNode.nodeType !== Node.TEXT_NODE) return;
+  
+  let start = range.startOffset;
+  let end = range.startOffset;
+  const text = textNode.data;
+  
+  // Find word boundaries
+  while (start > 0 && /\S/.test(text[start - 1])) start--;
+  while (end < text.length && /\S/.test(text[end])) end++;
+  
+  const range2 = document.createRange();
+  range2.setStart(textNode, start);
+  range2.setEnd(textNode, end);
+  
+  selection.removeAllRanges();
+  selection.addRange(range2);
+}
+
+// Desktop click
+versesContainer.addEventListener('click', (e) => {
+  // Don't count clicks if already selecting
+  if (isSelectingText) return;
+  
+  tapCount++;
+  lastClickPos = { x: e.clientX, y: e.clientY };
+  
+  if (tapCount === 1) {
+    tapTimer = setTimeout(() => {
+      tapCount = 0;
+    }, 300);
+  } else if (tapCount === 2) {
+    clearTimeout(tapTimer);
+    tapCount = 0;
+    isSelectingText = true;
+    versesContainer.style.userSelect = 'text';
+    versesContainer.style.webkitUserSelect = 'text';
+    
+    // Select the word at click position
+    selectWordAtPosition(lastClickPos.x, lastClickPos.y);
+  }
+}, false);
+
+// Mobile touch
+versesContainer.addEventListener('touchend', (e) => {
+  // Don't count taps if already selecting
+  if (isSelectingText) return;
+  
+  const touch = e.changedTouches[0];
+  tapCount++;
+  lastClickPos = { x: touch.clientX, y: touch.clientY };
+  
+  if (tapCount === 1) {
+    tapTimer = setTimeout(() => {
+      tapCount = 0;
+    }, 300);
+  } else if (tapCount === 2) {
+    clearTimeout(tapTimer);
+    tapCount = 0;
+    isSelectingText = true;
+    versesContainer.style.userSelect = 'text';
+    versesContainer.style.webkitUserSelect = 'text';
+    
+    // Select the word at tap position
+    selectWordAtPosition(lastClickPos.x, lastClickPos.y);
+  }
+}, false);
+
+// Disable selection when done
+document.addEventListener('mouseup', () => {
+  const selection = window.getSelection();
+  if (selection.toString().length === 0 && isSelectingText) {
+    isSelectingText = false;
+    versesContainer.style.userSelect = 'none';
+    versesContainer.style.webkitUserSelect = 'none';
+    tapCount = 0;
+  }
+});
+document.addEventListener('touchend', () => {
+  const selection = window.getSelection();
+  if (selection.toString().length === 0 && isSelectingText) {
+    isSelectingText = false;
+    versesContainer.style.userSelect = 'none';
+    versesContainer.style.webkitUserSelect = 'none';
+    tapCount = 0;
+  }
+});
+
+// Disable when clicking/tapping elsewhere
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#versesContainer') && isSelectingText) {
+    isSelectingText = false;
+    versesContainer.style.userSelect = 'none';
+    versesContainer.style.webkitUserSelect = 'none';
+    tapCount = 0;
+  }
+});
+
+document.addEventListener('touchstart', (e) => {
+  if (!e.target.closest('#versesContainer') && isSelectingText) {
+    isSelectingText = false;
+    versesContainer.style.userSelect = 'none';
+    versesContainer.style.webkitUserSelect = 'none';
+    tapCount = 0;
+  }
+});
+
 
 </script>
 </body>
