@@ -379,7 +379,10 @@ function getTafsirLink(surahNumber, verseNumber) {
 }
 
 function updateURL(surahNum, pageNum) {
-  const newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + `?surah=${surahNum}&page=${pageNum + 1}`;
+  const params = new URLSearchParams(window.location.search);
+  params.set('surah', surahNum);
+  params.set('page', pageNum + 1);
+  const newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + `?${params.toString()}`;
   window.history.replaceState({path: newurl}, '', newurl);
 }
 
@@ -411,22 +414,22 @@ function initPageDropdown() {
   }
 }
 
+
+
 function displayVerses(pageIndex) {
-  versesContainer.innerHTML = "";
-  
-  // Add/remove class to container based on mode
-  if (showTranslation) {
-    versesContainer.classList.add('translation-mode');
-  } else {
-    versesContainer.classList.remove('translation-mode');
+  if (!pages || pages.length === 0) {
+    versesContainer.innerHTML = '<p>Loading content...</p>';
+    return;
   }
-  
+  if (pageIndex < 0 || pageIndex >= pages.length) return;
+
+  versesContainer.innerHTML = "";
+
   const currentSurah = quranData.surahs[currentSurahIndex];
   const transDir = currentSurah.translation_dir || quranData.translation_dir || 'ltr';
   
   const defaultArabicSize = 24;
   const isMobile = window.innerWidth < 500;
-  
   const defaultPopoverSize = isMobile ? 16 : 14; 
   let popoverFontSize = defaultPopoverSize;
 
@@ -435,74 +438,84 @@ function displayVerses(pageIndex) {
   }
   popoverFontSize = Math.max(defaultPopoverSize, Math.min(40, popoverFontSize));
 
+  if (showTranslation) {
+    versesContainer.classList.add('translation-mode');
+  } else {
+    versesContainer.classList.remove('translation-mode');
+  }
+
   pages[pageIndex].forEach((verse, idx) => {
     const verseNum = verse.number || (pageIndex * maxVersesPerPage + idx + 1);
     const verseDiv = document.createElement('div');
     verseDiv.className = "verse";
     verseDiv.style.fontSize = currentFontSize + "px";
-    
-    const safeTranslation = verse.translation
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-    
-    const safeArabic = verse.arabic
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-    
-    // Determine what to show in main view vs popover based on mode
-    let mainText, popoverContent;
-    
-    if (showTranslation) {
-      // Show translation as main text, Arabic in popover
-      mainText = verse.translation+'. ';
-      verseDiv.classList.add('ltr-mode');
-      popoverContent = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: rtl;'>${safeArabic}</span>`;
 
-      // Add info icon only if translation mode is ON and tafsir exists
-      // Get tafsir link if available
-      const currentSurahNumber = currentSurah.number;
-      const tafsirLink = getTafsirLink(currentSurahNumber, verseNum);
-      
-      let infoIconHTML = '';
-      if (showTranslation && tafsirLink) {
-        infoIconHTML = `<a href="${tafsirLink}" 
-          target="_blank" 
-          style="margin-left:4px; font-size:1em; color:green; font-weight:bold; text-decoration:none; cursor:pointer; display:inline-block; position:relative; top:1px;">
-          ℹ️
-        </a>`;
+    const safeTranslation = verse.translation.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    const safeArabic = verse.arabic.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+    let mainText, popoverContent, infoIconHTML = '';
+
+    if (showTranslation) {
+      mainText = verse.translation + '. ';
+      const tafsirLink = getTafsirLink(currentSurah.number, verseNum);
+      if (tafsirLink) {
+        infoIconHTML = `<a href="${tafsirLink}" target="_blank" style="margin-left:4px; font-size:1em; color:green; font-weight:bold; text-decoration:none; cursor:pointer; display:inline-block; position:relative; top:1px;">ℹ️</a>`;
       }
 
+      popoverContent = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: rtl;'>${safeArabic}</span>`;
 
+      const isTranslationRTL = transDir === 'rtl';
+      verseDiv.style.direction = isTranslationRTL ? 'rtl' : 'ltr';
+      verseDiv.style.textAlign = isTranslationRTL ? 'right' : 'left';
 
-      // For LTR: verse number BEFORE the text
-      verseDiv.innerHTML = `<span class="verse-number" 
-        data-bs-toggle="popover" 
-        data-bs-trigger="click" 
-        data-bs-placement="auto" 
-        data-bs-content="${popoverContent}" 
-        data-index="${verseNum}">[${verseNum}]${infoIconHTML}</span>${mainText}`;
+      if (isTranslationRTL) {
+        // RTL: <translation> <icon+number>
+        verseDiv.style.display = 'flex';
+        verseDiv.style.justifyContent = 'flex-end';
+        verseDiv.style.gap = '8px';
+        verseDiv.style.alignItems = 'flex-start';
+
+        const verseSpan = document.createElement('span');
+        verseSpan.className = 'verse-number';
+        verseSpan.setAttribute('data-bs-toggle', 'popover');
+        verseSpan.setAttribute('data-bs-trigger', 'click');
+        verseSpan.setAttribute('data-bs-placement', 'auto');
+        verseSpan.setAttribute('data-bs-content', popoverContent);
+        verseSpan.setAttribute('data-index', verseNum);
+        verseSpan.style.whiteSpace = 'nowrap';
+        verseSpan.style.cursor = 'pointer';
+        verseSpan.innerHTML = `[${verseNum}]${infoIconHTML}`;
+
+        const textSpan = document.createElement('span');
+        textSpan.style.direction = 'rtl';
+        textSpan.style.textAlign = 'right';
+        textSpan.textContent = mainText;
+
+        verseDiv.appendChild(textSpan);
+        verseDiv.appendChild(verseSpan);
+      } else {
+        // LTR: <verse-number> <translation>
+        verseDiv.innerHTML = `<span class="verse-number" data-bs-toggle="popover" data-bs-trigger="click" data-bs-placement="auto" data-bs-content="${popoverContent}" data-index="${verseNum}">[${verseNum}]${infoIconHTML}</span>${mainText}`;
+      }
+
     } else {
-      // Show Arabic as main text, translation in popover
+      // Arabic main text
       mainText = verse.arabic;
       popoverContent = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: ${transDir};'>${safeTranslation}</span>`;
-      
-      // For RTL: verse number AFTER the text
-      verseDiv.innerHTML = `${mainText} <span class="verse-number" 
-        data-bs-toggle="popover" 
-        data-bs-trigger="click" 
-        data-bs-placement="auto" 
-        data-bs-content="${popoverContent}" 
-        data-index="${verseNum}">[${verseNum}]</span>`;
+
+      verseDiv.innerHTML = `${mainText} <span class="verse-number" data-bs-toggle="popover" data-bs-trigger="click" data-bs-placement="auto" data-bs-content="${popoverContent}" data-index="${verseNum}">[${verseNum}]</span>`;
     }
 
     versesContainer.appendChild(verseDiv);
   });
 
+  // Initialize popovers
+  const currentSurahLocal = currentSurah;
   document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
-    const popoverDir = showTranslation ? 'rtl' : transDir;
-    const popoverAlign = showTranslation ? 'right' : (transDir === 'rtl' ? 'right' : 'left');
+    const popoverDir = showTranslation ? transDir : 'rtl';
+    const popoverAlign = popoverDir === 'rtl' ? 'right' : 'left';
     const headerLabel = showTranslation ? 'Arabic' : 'Translation';
-    
+
     const popover = new bootstrap.Popover(el, {
       html: true,
       sanitize: false,
@@ -517,13 +530,13 @@ function displayVerses(pageIndex) {
           <div class="popover-body" style="direction: ${popoverDir}; padding: 12px;"></div>
         </div>`
     });
-    
+
     el.addEventListener('shown.bs.popover', function () {
       if (activePopover && activePopover !== popover) {
         activePopover.hide();
       }
       activePopover = popover;
-      
+
       setTimeout(() => {
         const closeBtn = document.querySelector('.popover.show .close-popover');
         if (closeBtn) {
@@ -536,9 +549,7 @@ function displayVerses(pageIndex) {
       }, 50);
     });
   });
-
 }
-
 
 
 
@@ -694,12 +705,22 @@ function initFromURL() {
   const params = new URLSearchParams(window.location.search);
   const surahNum = parseInt(params.get('surah'));
   const pageNum = parseInt(params.get('page'));
-  let sIndex = 0; let pIndex = 0;
-  if (!isNaN(surahNum)) { const foundIndex = quranData.surahs.findIndex(s => s.number === surahNum); if (foundIndex !== -1) sIndex = foundIndex; }
-  if (!isNaN(pageNum)) pIndex = pageNum - 1;
-  initSurahDropdown(); loadSurah(sIndex, pIndex);
+  
+  let sIndex = 0; 
+  let pIndex = 0;
+  
+  // Validate surah number
+  if (!isNaN(surahNum)) { 
+    const foundIndex = quranData.surahs.findIndex(s => s.number === surahNum); 
+    if (foundIndex !== -1) sIndex = foundIndex; 
+  }
+  
+  // Validate page number
+  if (!isNaN(pageNum)) pIndex = Math.max(0, pageNum - 1);
+  
+  // Now load the surah - this populates the pages array
+  loadSurah(sIndex, pIndex);
 }
-
 
 
 function getTelegramHeight() {
@@ -767,16 +788,24 @@ function getBrowserLanguageCode() {
   return raw.split('-')[0].toLowerCase();
 }
 
-function getInitialLanguage() {
-  const urlLang = new URLSearchParams(window.location.search).get('lang');
-  if (urlLang && supportedLanguageCodes.includes(urlLang.toLowerCase())) {
-    return urlLang.toLowerCase();
+function extractLanguageFromURL() {
+  const fullUrl = window.location.search;
+  // Match lang parameter allowing for malformed URLs
+  const langMatch = fullUrl.match(/[?&]lang=([a-z]{2,3})/i);
+  if (langMatch && langMatch[1]) {
+    return langMatch[1].toLowerCase();
   }
-  return supportedLanguageCodes.includes(getBrowserLanguageCode())
-    ? getBrowserLanguageCode()
-    : 'en';
+  return null;
 }
 
+function getInitialLanguage() {
+  const urlLang = extractLanguageFromURL();
+  if (urlLang && supportedLanguageCodes.includes(urlLang)) {
+    return urlLang;
+  }
+  const browserLang = (navigator.language || navigator.userLanguage || 'en').split('-')[0].toLowerCase();
+  return supportedLanguageCodes.includes(browserLang) ? browserLang : 'en';
+}
 
 function initLanguageDropdown() {
   languageSelectOptions.innerHTML = '';
@@ -791,6 +820,11 @@ function initLanguageDropdown() {
       setLanguage(code);
       languageSelectButton.textContent = getLanguageFullName(code) + " ▼";
       languageSelectOptions.style.display = 'none';
+
+      // Update the URL with new lang param
+      const params = new URLSearchParams(window.location.search);
+      params.set('lang', code);
+      history.replaceState({}, '', `${location.pathname}?${params}`);
     });
 
     languageSelectOptions.appendChild(option);
@@ -862,7 +896,6 @@ function loadLanguageData(lang) {
 }
 
 
-
 async function setLanguage(lang) {
   if (!lang || !supportedLanguageCodes.includes(lang)) lang = 'en';
 
@@ -870,28 +903,42 @@ async function setLanguage(lang) {
 
   // Bind globals created by script
   quranData = window[`${lang}QuranData`] || window.quranData;
-  // tafsirData = window[`${lang}TafsirData`] || window.tafsirData;
   tafsirData = window[`enTafsirData`] || window.tafsirData;
 
+  // Validate quranData exists
+  if (!quranData || !quranData.surahs || quranData.surahs.length === 0) {
+    console.error('No Quran data loaded for language:', lang);
+    return;
+  }
 
   document.body.dir = quranData.translation_dir || 'ltr';
 
   initSurahDropdown();
+  
+  // IMPORTANT: Only call initFromURL() to get saved position from URL
+  // Don't call loadSurah() separately - initFromURL does that
   initFromURL();
-  loadSurah(0, 0);
 
   const params = new URLSearchParams(location.search);
   params.set('lang', lang);
   history.replaceState({}, '', `${location.pathname}?${params}`);
+  languageSelectButton.textContent = getLanguageFullName(lang) + " ▼";
+
 }
 
 
+function getURLParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    surah: parseInt(params.get('surah')) || 1,
+    page: Math.max(1, parseInt(params.get('page')) || 1),
+    lang: extractLanguageFromURL() || 'en'
+  };
+}
 
 initLanguageDropdown();
-// On page load: read lang from URL
-const urlParams = new URLSearchParams(window.location.search);
-const initialLang = urlParams.get('lang') || 'en';
-setLanguage(initialLang);
+const initialParams = getURLParams();
+setLanguage(initialParams.lang);
 
 // initFromURL();
 
