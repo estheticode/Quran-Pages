@@ -1,5 +1,5 @@
 window.bnQuranData = {
-  "translation_dir": "rtl",
+  "translation_dir": "ltr",
   "surahs": [
     {
       "number": 1,
