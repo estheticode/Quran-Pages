@@ -335,18 +335,20 @@
     color: inherit;
   }
 
-  body.is-telegram h1#surahName {
-    position: relative;
-    top: -150px; /* pull up relative to Telegram padding */
+  body.is-telegram #surahName,
+  body.is-telegram .bismillah,
+  body.is-telegram #versesContainer {
+      position: relative;
+      top: -120px; /* adjust as needed */
   }
 
-  body.is-telegram .bismillah {
-      position: relative;
-      top: -120px; /* pull up along with Surah name */
-  }
+  /* Smaller screens */
   @media (max-width: 768px) {
-    body.is-telegram h1#surahName { top: -120px; }
-    body.is-telegram .bismillah { top: -100px; }
+      body.is-telegram h1#surahName,
+      body.is-telegram .bismillah,
+      body.is-telegram #versesContainer {
+          top: -120px; /* adjust for smaller screens */
+      }
   }
 
 
