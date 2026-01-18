@@ -238,8 +238,8 @@
     100% { transform: perspective(1200px) rotateY(0deg) scale(1); } 
   }
 
-  .flipping-forward { animation: pageFlipForward 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-  .flipping-backward { animation: pageFlipBackward 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+  .flipping-forward { animation: pageFlipForward 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+  .flipping-backward { animation: pageFlipBackward 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
 
 
 
@@ -593,7 +593,7 @@ function goToPage(pageIndex, direction = 'none') {
     pageSelectButton.textContent = "Page " + (currentPage + 1) + " ▼";
     document.body.classList.toggle('not-first-page', currentPage !== 0);
     updateURL(quranData.surahs[currentSurahIndex].number, currentPage);
-  }, direction === 'none' ? 0 : 150);
+  }, direction === 'none' ? 0 : 125);
 }
 
 function updateProgressBar() {
