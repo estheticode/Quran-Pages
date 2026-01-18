@@ -335,21 +335,24 @@
     color: inherit;
   }
 
-  body.is-telegram #surahName,
-  body.is-telegram .bismillah,
-  body.is-telegram #versesContainer {
+  
+  /* Telegram Web App – FIRST PAGE ONLY */
+  body.is-telegram:not(.not-first-page) #surahName,
+  body.is-telegram:not(.not-first-page) .bismillah,
+  body.is-telegram:not(.not-first-page) #versesContainer {
       position: relative;
-      top: -80px; /* adjust as needed */
+      top: -75px;
   }
 
-  /* Smaller screens */
+  /* Smaller screens – FIRST PAGE ONLY */
   @media (max-width: 768px) {
-      body.is-telegram h1#surahName,
-      body.is-telegram .bismillah,
-      body.is-telegram #versesContainer {
-          top: -90px; /* adjust for smaller screens */
+      body.is-telegram:not(.not-first-page) #surahName,
+      body.is-telegram:not(.not-first-page) .bismillah,
+      body.is-telegram:not(.not-first-page) #versesContainer {
+          top: -75px;
       }
   }
+
 
 
 </style>
