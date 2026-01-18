@@ -478,7 +478,7 @@ function displayVerses(pageIndex) {
       mainText = verse.translation + '.';
       const tafsirLink = getTafsirLink(currentSurah.number, verseNum);
       if (tafsirLink) {
-        infoIconHTML = `<a href="${tafsirLink}" target="_blank" style="margin-left:4px; font-size:1em; color:green; font-weight:bold; text-decoration:none; cursor:pointer; display:inline-block; position:relative; top:1px;">ℹ️</a>`;
+        infoIconHTML = `<a href="${tafsirLink}" target="_blank" style="margin-left:4px; margin-right:4px; font-size:1em; color:green; font-weight:bold; text-decoration:none; cursor:pointer; display:inline-block; position:relative; top:1px;">ℹ️</a>`;
       }
 
       popoverContent = `<span style='font-size: ${popoverFontSize}px; line-height: 1.6; display: block; direction: rtl;'>${safeArabic}</span>`;
