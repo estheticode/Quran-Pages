@@ -238,8 +238,8 @@
     100% { transform: perspective(1200px) rotateY(0deg) scale(1); } 
   }
 
-  .flipping-forward { animation: pageFlipForward 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-  .flipping-backward { animation: pageFlipBackward 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+  .flipping-forward { animation: pageFlipForward 0.15s cubic-bezier(0.4, 0, 0.2, 1); }
+  .flipping-backward { animation: pageFlipBackward 0.15s cubic-bezier(0.4, 0, 0.2, 1); }
 
 
 
@@ -593,7 +593,7 @@ function goToPage(pageIndex, direction = 'none') {
     pageSelectButton.textContent = "Page " + (currentPage + 1) + " ▼";
     document.body.classList.toggle('not-first-page', currentPage !== 0);
     updateURL(quranData.surahs[currentSurahIndex].number, currentPage);
-  }, direction === 'none' ? 0 : 125);
+  }, direction === 'none' ? 0 : 75);
 }
 
 function updateProgressBar() {
@@ -1071,7 +1071,6 @@ function selectWordAtPosition(x, y) {
   selection.removeAllRanges();
   selection.addRange(range2);
 }
-
 // Desktop click
 versesContainer.addEventListener('click', (e) => {
   // Don't count clicks if already selecting
@@ -1081,6 +1080,7 @@ versesContainer.addEventListener('click', (e) => {
   lastClickPos = { x: e.clientX, y: e.clientY };
   
   if (tapCount === 1) {
+    clearTimeout(tapTimer);
     tapTimer = setTimeout(() => {
       tapCount = 0;
     }, 300);
@@ -1096,29 +1096,31 @@ versesContainer.addEventListener('click', (e) => {
   }
 }, false);
 
-// Mobile touch
+
+// Mobile touch - only select on double tap
+let lastTouchTime = 0;
+
 versesContainer.addEventListener('touchend', (e) => {
   // Don't count taps if already selecting
   if (isSelectingText) return;
   
-  const touch = e.changedTouches[0];
-  tapCount++;
-  lastClickPos = { x: touch.clientX, y: touch.clientY };
+  const now = Date.now();
+  const timeSinceLastTap = now - lastTouchTime;
   
-  if (tapCount === 1) {
-    tapTimer = setTimeout(() => {
-      tapCount = 0;
-    }, 300);
-  } else if (tapCount === 2) {
-    clearTimeout(tapTimer);
-    tapCount = 0;
+  if (timeSinceLastTap < 300 && timeSinceLastTap > 0) {
+    // Double tap detected (within 300ms)
     isSelectingText = true;
     versesContainer.style.userSelect = 'text';
     versesContainer.style.webkitUserSelect = 'text';
     
+    const touch = e.changedTouches[0];
+    lastClickPos = { x: touch.clientX, y: touch.clientY };
+    
     // Select the word at tap position
     selectWordAtPosition(lastClickPos.x, lastClickPos.y);
   }
+  
+  lastTouchTime = now;
 }, false);
 
 // Disable selection when done
