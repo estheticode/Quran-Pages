@@ -12,7 +12,7 @@
     font-family: 'Arial', sans-serif;
     background: #F4E4C1;
     color: #000;
-    padding: 85px 20px 20px 20px;
+    padding: 120px 20px 20px 20px;
     text-align: center;
     direction: rtl;
     max-width: 1000px;  
@@ -285,19 +285,15 @@
     }
 
     body.is-telegram {
-      padding-top: max(140px, calc(10vh + 50px + env(safe-area-inset-top)));
+      padding-top: max(230px, calc(20vh + 100px + env(safe-area-inset-top)));
     }
 
     body.is-telegram #header {
-      top: max(calc(94px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.12 + 6px));
+      top: max(calc(86px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.11 + 6px));
     }
 
     body.is-telegram #progressBarContainer {
       top: max(calc(80px + env(safe-area-inset-top)), calc(var(--viewport-height, 100vh) * 0.11));
-    }
-
-    body.is-telegram #headerSpacer {
-      height: 30px !important;
     }
   }
   
@@ -305,18 +301,17 @@
     body {
       padding-top: max(250px, calc(25vh + 80px + env(safe-area-inset-top)));
     }
-  }
 
-  @media (max-width: 768px) {
-  body:not(.is-telegram) {
-    padding-top: 100px;
-  }
-  
-  body:not(.is-telegram) #header {
-      top: 6px;
+    @media (max-width: 768px) {
+    body:not(.is-telegram) {
+      padding-top: 100px;
+    }
+    
+    body:not(.is-telegram) #header {
+        top: 6px;
+      }
     }
   }
-
   #fontIncrease,
   #fontDecrease {
     font-weight: 550;
@@ -326,7 +321,7 @@
 
   #headerSpacer {
   width: 100%;
-  margin-bottom: -30px;
+  margin-bottom: -10px;
   }
 
   /* Text selection styling for desktop */
@@ -1076,7 +1071,7 @@ function updateHeaderSpacer() {
   const header = document.getElementById('header');
   const spacer = document.getElementById('headerSpacer');
   if (header && spacer) {
-    spacer.style.height = (header.offsetHeight - 50) + 'px';
+    spacer.style.height = (header.offsetHeight - 80) + 'px';
   }
 }
 
