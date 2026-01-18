@@ -302,6 +302,17 @@
       padding-top: max(250px, calc(25vh + 80px + env(safe-area-inset-top)));
     }
   }
+
+  @media (max-width: 768px) {
+  body:not(.is-telegram) {
+    padding-top: 100px;
+  }
+  
+  body:not(.is-telegram) #header {
+      top: 6px;
+    }
+  }
+  
   #fontIncrease,
   #fontDecrease {
     font-weight: 550;
