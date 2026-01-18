@@ -335,22 +335,19 @@
     color: inherit;
   }
 
-  h1#surahName {
-    font-size: 40px;
-    margin: 0 0 5px 0;  /* Reduce top margin */
+  body.is-telegram h1#surahName {
     position: relative;
-    top: -60px;         /* Move up 10px */
+    top: -150px; /* pull up relative to Telegram padding */
   }
 
-  .bismillah {
-    font-size: 26px;
-    font-weight: bold;
-    color: #555;
-    margin: 5px 0 20px 0;
-    position: relative;
-    top: -40px;  /* Move slightly up */
+  body.is-telegram .bismillah {
+      position: relative;
+      top: -120px; /* pull up along with Surah name */
   }
-
+  @media (max-width: 768px) {
+    body.is-telegram h1#surahName { top: -120px; }
+    body.is-telegram .bismillah { top: -100px; }
+  }
 
 
 </style>
