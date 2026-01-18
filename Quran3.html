@@ -226,19 +226,20 @@
   body.dark .popover-body::-webkit-scrollbar-thumb { background-color: #4ade80; }
   body.dark .close-popover { color: #4ade80 !important; }
 
-  @keyframes flipFastLeft { 
-    0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
-    50% { transform: perspective(1000px) rotateY(45deg); opacity: 0.5; filter: blur(2px); } 
-    100% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
+  @keyframes pageFlipForward { 
+  0% { transform: perspective(1200px) rotateY(0deg) scale(1); } 
+  50% { transform: perspective(1200px) rotateY(180deg) scale(0.7); } 
+  100% { transform: perspective(1200px) rotateY(0deg) scale(1); } 
   }
-  @keyframes flipFastRight { 
-    0% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
-    50% { transform: perspective(1000px) rotateY(-45deg); opacity: 0.5; filter: blur(2px); } 
-    100% { transform: perspective(1000px) rotateY(0deg); opacity: 1; filter: blur(0px); } 
+
+  @keyframes pageFlipBackward { 
+    0% { transform: perspective(1200px) rotateY(0deg) scale(1); } 
+    50% { transform: perspective(1200px) rotateY(-180deg) scale(0.7); } 
+    100% { transform: perspective(1200px) rotateY(0deg) scale(1); } 
   }
-  
-  .flipping-forward { animation: flipFastLeft 0.22s cubic-bezier(0.4, 0, 0.2, 1); }
-  .flipping-backward { animation: flipFastRight 0.22s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  .flipping-forward { animation: pageFlipForward 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+  .flipping-backward { animation: pageFlipBackward 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
   @media (max-width: 500px) {
     h1#surahName { font-size: 32px; }
@@ -573,7 +574,7 @@ function goToPage(pageIndex, direction = 'none') {
     pageSelectButton.textContent = "Page " + (currentPage + 1) + " ▼";
     document.body.classList.toggle('not-first-page', currentPage !== 0);
     updateURL(quranData.surahs[currentSurahIndex].number, currentPage);
-  }, direction === 'none' ? 0 : 110);
+  }, direction === 'none' ? 0 : 150);
 }
 
 function updateProgressBar() {
@@ -624,18 +625,24 @@ document.addEventListener('keydown', (e) => {
 function handleStart(e, x) { if (e.target.closest('.popover') || e.target.closest('#header')) { isDragging = false; return; } startX = x; isDragging = true; }
 function handleMove(x) {
   if (!isDragging) return;
-
+  
   const diff = x - startX;
-  const progress = diff / window.innerWidth;
-  const angle = Math.max(-35, Math.min(35, progress * 35));
-
-  // LEFT → RIGHT  => lift LEFT edge
-  // RIGHT → LEFT  => lift RIGHT edge
-  versesContainer.style.transformOrigin = diff > 0 ? 'left center' : 'right center';
-  versesContainer.style.transform =
-    `perspective(1000px) rotateY(${angle}deg)`;
+  const progress = Math.abs(diff) / window.innerWidth;
+  // Optional: fade slightly during drag
+  versesContainer.style.opacity = Math.max(0.8, 1 - progress * 0.2);
 }
-function handleEnd(x) { if (!isDragging) return; isDragging = false; versesContainer.style.transform = ''; const diff = x - startX; if (Math.abs(diff) > minSwipeDist) { diff > 0 ? goToPage(currentPage + 1, 'forward') : goToPage(currentPage - 1, 'backward'); } }
+
+function handleEnd(x) { 
+  if (!isDragging) return; 
+  isDragging = false; 
+  versesContainer.style.opacity = '1'; // Reset opacity
+  versesContainer.style.transform = ''; 
+  
+  const diff = x - startX; 
+  if (Math.abs(diff) > minSwipeDist) { 
+    diff > 0 ? goToPage(currentPage + 1, 'forward') : goToPage(currentPage - 1, 'backward'); 
+  }
+}
 
 document.addEventListener('touchstart', e => handleStart(e, e.touches[0].clientX), {passive: true});
 document.addEventListener('touchmove', e => handleMove(e.touches[0].clientX), {passive: true});
