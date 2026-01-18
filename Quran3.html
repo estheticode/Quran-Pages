@@ -783,6 +783,7 @@ updateFontButtons();
 const languageSelectButton = document.getElementById('languageSelectButton');
 const languageSelectOptions = document.getElementById('languageSelectOptions');
 
+
 function getBrowserLanguageCode() {
   const raw = navigator.language || navigator.userLanguage || 'en';
   return raw.split('-')[0].toLowerCase();
@@ -836,7 +837,9 @@ function initLanguageDropdown() {
 }
 
 
-// Toggle dropdown visibility
+
+
+
 languageSelectButton.onclick = (e) => {
   e.stopPropagation();
   // hide other dropdowns
@@ -900,10 +903,8 @@ async function setLanguage(lang) {
   if (!lang || !supportedLanguageCodes.includes(lang)) lang = 'en';
 
   await loadLanguageData(lang);
-
-  // Bind globals created by script
-  quranData = window[`${lang}QuranData`] || window.quranData;
-  tafsirData = window[`enTafsirData`] || window.tafsirData;
+  quranData = window.quranData;
+  tafsirData = window.tafsirData;
 
   // Validate quranData exists
   if (!quranData || !quranData.surahs || quranData.surahs.length === 0) {
