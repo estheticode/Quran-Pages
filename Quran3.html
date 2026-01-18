@@ -339,11 +339,10 @@
 <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
 
 <div id="versesContainer"></div>
-
+<script src="languages.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <!-- <script src="data/en/quranData.js"></script>
 <script src="data/en/tafsirData.js"></script> -->
-<script src="languages.js"></script> 
 
 <script>
 
@@ -456,7 +455,7 @@ function displayVerses(pageIndex) {
     let mainText, popoverContent, infoIconHTML = '';
 
     if (showTranslation) {
-      mainText = verse.translation + '. ';
+      mainText = verse.translation + '.';
       const tafsirLink = getTafsirLink(currentSurah.number, verseNum);
       if (tafsirLink) {
         infoIconHTML = `<a href="${tafsirLink}" target="_blank" style="margin-left:4px; font-size:1em; color:green; font-weight:bold; text-decoration:none; cursor:pointer; display:inline-block; position:relative; top:1px;">ℹ️</a>`;
@@ -484,7 +483,7 @@ function displayVerses(pageIndex) {
         verseSpan.setAttribute('data-index', verseNum);
         verseSpan.style.whiteSpace = 'nowrap';
         verseSpan.style.cursor = 'pointer';
-        verseSpan.innerHTML = `[${verseNum}] ${infoIconHTML}`;
+        verseSpan.innerHTML = `[${verseNum}]${infoIconHTML}`;
 
         const textSpan = document.createElement('span');
         textSpan.style.direction = 'rtl';
@@ -900,32 +899,42 @@ function loadLanguageData(lang) {
 
 
 async function setLanguage(lang) {
+  // Fallback to 'en' if invalid language code
   if (!lang || !supportedLanguageCodes.includes(lang)) lang = 'en';
 
-  await loadLanguageData(lang);
-  quranData = window.quranData;
-  tafsirData = window.tafsirData;
+  try {
+    // 1️⃣ Dynamically load Quran and Tafsir scripts for the language
+    await loadLanguageData(lang);
+    normalizeDataExports(lang);
+    quranData = window.quranData || window[`${lang}QuranData`];
+    tafsirData = window.tafsirData || window[`${lang}TafsirData`];
 
-  // Validate quranData exists
-  if (!quranData || !quranData.surahs || quranData.surahs.length === 0) {
-    console.error('No Quran data loaded for language:', lang);
-    return;
+    // 2️⃣ Ensure data is loaded
+    if (!quranData || !quranData.surahs || quranData.surahs.length === 0) {
+      console.error('No Quran data loaded for language:', lang);
+      return;
+    }
+
+    // 3️⃣ Set page direction
+    document.body.dir = quranData.translation_dir || 'ltr';
+
+    // 4️⃣ Initialize Surah dropdown
+    initSurahDropdown();
+
+    // 5️⃣ Load current Surah + page from URL (only now, after data is ready)
+    initFromURL();
+
+    // 6️⃣ Update language button and URL
+    languageSelectButton.textContent = getLanguageFullName(lang) + " ▼";
+    const params = new URLSearchParams(location.search);
+    params.set('lang', lang);
+    history.replaceState({}, '', `${location.pathname}?${params}`);
+
+  } catch (err) {
+    console.error('Error loading language data:', err);
   }
-
-  document.body.dir = quranData.translation_dir || 'ltr';
-
-  initSurahDropdown();
-  
-  // IMPORTANT: Only call initFromURL() to get saved position from URL
-  // Don't call loadSurah() separately - initFromURL does that
-  initFromURL();
-
-  const params = new URLSearchParams(location.search);
-  params.set('lang', lang);
-  history.replaceState({}, '', `${location.pathname}?${params}`);
-  languageSelectButton.textContent = getLanguageFullName(lang) + " ▼";
-
 }
+
 
 
 function getURLParams() {
@@ -937,9 +946,34 @@ function getURLParams() {
   };
 }
 
-initLanguageDropdown();
-const initialParams = getURLParams();
-setLanguage(initialParams.lang);
+// initLanguageDropdown();
+// const initialParams = getURLParams();
+// setLanguage(initialParams.lang);
+
+// Normalize all language-specific exports to generic names
+function normalizeDataExports(lang) {
+  window.quranData = window[`${lang}QuranData`] || window.quranData;
+  window.tafsirData = window[`${lang}TafsirData`] || window.tafsirData;
+}
+
+async function initApp() {
+  // 1. Initialize the language dropdown first
+  initLanguageDropdown();
+
+  // 2. Get initial language from URL or browser
+  const initialParams = getURLParams();
+
+  // 3. Normalize exports for initial language
+  await new Promise(resolve => setTimeout(resolve, 100)); // Wait for language scripts to load
+  normalizeDataExports(initialParams.lang);
+
+  // 4. Load Quran + Tafsir data and wait for it
+  await setLanguage(initialParams.lang);
+}
+
+// Run app
+initApp();
+
 
 // initFromURL();
 
