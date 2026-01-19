@@ -418,6 +418,7 @@ let currentFontSize = 24;
 let pages = [];
 let totalPages = 0;
 let activePopover = null;
+let isInitialLoad = true; 
 
 const versesContainer = document.getElementById('versesContainer');
 const surahSelectButton = document.getElementById('surahSelectButton');
@@ -438,12 +439,23 @@ function getTafsirLink(surahNumber, verseNumber) {
 }
 
 function updateURL(surahNum, pageNum) {
+  // Skip updating URL during initial load
+  if (isInitialLoad) {
+    console.log('Skipping URL update during initial load');
+    return;
+  }
+  
   const params = new URLSearchParams(window.location.search);
   params.set('surah', surahNum);
   params.set('page', pageNum + 1);
-  const newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + `?${params.toString()}`;
+  // lang parameter is preserved automatically
+  // const newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + `?${params.toString()}`;
+
+  const newurl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
   window.history.replaceState({path: newurl}, '', newurl);
+  console.log('Updated URL:', newurl);
 }
+
 
 function loadSurah(surahIndex, pageIndex = 0, direction = 'none') {
   currentSurahIndex = surahIndex;
@@ -618,7 +630,6 @@ function displayVerses(pageIndex) {
 }
 
 
-
 function goToPage(pageIndex, direction = 'none') {
   if (activePopover) { activePopover.hide(); activePopover = null; }
   if(pageIndex < 0) {
@@ -639,7 +650,11 @@ function goToPage(pageIndex, direction = 'none') {
     updateProgressBar();
     pageSelectButton.textContent = "Page " + (currentPage + 1) + " ▼";
     document.body.classList.toggle('not-first-page', currentPage !== 0);
-    updateURL(quranData.surahs[currentSurahIndex].number, currentPage);
+    
+    // Only update URL AFTER initial load is complete
+    if (!isInitialLoad) {
+      updateURL(quranData.surahs[currentSurahIndex].number, currentPage);
+    }
   }, direction === 'none' ? 0 : 75);
 }
 
@@ -1080,6 +1095,8 @@ function getURLParams() {
 }
 
 async function initApp() {
+  isInitialLoad = true; // Start with true
+  
   // 1. Initialize the language dropdown first
   initLanguageDropdown();
 
@@ -1087,12 +1104,17 @@ async function initApp() {
   const initialParams = getURLParams();
 
   // 3. Normalize exports for initial language
-  await new Promise(resolve => setTimeout(resolve, 100)); // Wait for language scripts to load
+  await new Promise(resolve => setTimeout(resolve, 100));
   normalizeDataExports(initialParams.lang);
 
   // 4. Load Quran + Tafsir data and wait for it
   await setLanguage(initialParams.lang);
+  
+  // 5. NOW mark initial load as complete
+  isInitialLoad = false;
+  console.log('Initial load complete. URL updates now enabled.');
 }
+
 
 // Run app
 initApp();
