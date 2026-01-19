@@ -898,13 +898,8 @@ function getBrowserLanguageCode() {
 }
 
 function extractLanguageFromURL() {
-  const fullUrl = window.location.search;
-  // Match lang parameter allowing for malformed URLs
-  const langMatch = fullUrl.match(/[?&]lang=([a-z]{2,3})/i);
-  if (langMatch && langMatch[1]) {
-    return langMatch[1].toLowerCase();
-  }
-  return null;
+  const lang = getURLParam('lang');
+  return lang ? lang.toLowerCase() : null;
 }
 
 function getInitialLanguage() {
@@ -1045,16 +1040,23 @@ async function setLanguage(lang) {
 }
 
 
-
-function getURLParams() {
-  const params = new URLSearchParams(window.location.search);
-  return {
-    surah: parseInt(params.get('surah')) || 1,
-    page: Math.max(1, parseInt(params.get('page')) || 1),
-    lang: extractLanguageFromURL() || 'en'
-  };
+// IMPROVED: More robust URL parameter extraction
+function getURLParam(paramName) {
+  try {
+    // Try URLSearchParams first (modern approach)
+    const params = new URLSearchParams(window.location.search);
+    const value = params.get(paramName);
+    if (value) return value;
+    
+    // Fallback: manual parsing for edge cases
+    const regex = new RegExp(`[?&]${paramName}=([^&]*)`);
+    const match = window.location.search.match(regex);
+    return match ? decodeURIComponent(match[1]) : null;
+  } catch (e) {
+    console.error(`Error parsing ${paramName}:`, e);
+    return null;
+  }
 }
-
 // initLanguageDropdown();
 // const initialParams = getURLParams();
 // setLanguage(initialParams.lang);
@@ -1063,6 +1065,18 @@ function getURLParams() {
 function normalizeDataExports(lang) {
   window.quranData = window[`${lang}QuranData`] || window.quranData;
   window.tafsirData = window[`${lang}TafsirData`] || window.tafsirData;
+}
+
+function getURLParams() {
+  const surahParam = getURLParam('surah');
+  const pageParam = getURLParam('page');
+  const langParam = getURLParam('lang');
+  
+  return {
+    surah: surahParam ? Math.max(1, parseInt(surahParam)) : 1,
+    page: pageParam ? Math.max(1, parseInt(pageParam)) : 1,
+    lang: langParam || 'en'
+  };
 }
 
 async function initApp() {
