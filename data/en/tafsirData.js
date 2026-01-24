@@ -1,4 +1,4 @@
-const tafsirData = 
+window.enTafsirData =
 {
   "tafsirs": {
     "21_84": "https://telegra.ph/Tafsir-of-2184-Ibn-Kathir-01-22",
@@ -6239,4 +6239,5 @@ const tafsirData =
     "110_3": "https://telegra.ph/Tafsir-of-1103-Ibn-Kathir-01-23"
   }
 }
+
 
