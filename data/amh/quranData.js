@@ -1,5 +1,4 @@
-const quranData = 
-{
+window.amhQuranData = {
   "translation_dir": "ltr",
   "surahs": [
     {
