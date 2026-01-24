@@ -1,9 +1,10 @@
 window.amQuranData = {
+  
   "translation_dir": "ltr",
   "surahs": [
     {
       "number": 1,
-      "name": "Al-Fatihah",
+      "name": "الفاتحة",
       "englishName": "Al-Fatihah",
       "verses": [
         {
@@ -45,7 +46,7 @@ window.amQuranData = {
     },
     {
       "number": 2,
-      "name": "Al-Baqarah",
+      "name": "البقرة",
       "englishName": "Al-Baqarah",
       "verses": [
         {
@@ -1482,7 +1483,7 @@ window.amQuranData = {
     },
     {
       "number": 3,
-      "name": "Al-Imran",
+      "name": "آل عمران",
       "englishName": "Al-Imran",
       "verses": [
         {
@@ -2489,7 +2490,7 @@ window.amQuranData = {
     },
     {
       "number": 4,
-      "name": "An-Nisa",
+      "name": "النساء",
       "englishName": "An-Nisa",
       "verses": [
         {
@@ -3376,7 +3377,7 @@ window.amQuranData = {
     },
     {
       "number": 5,
-      "name": "Al-Ma'idah",
+      "name": "المائدة",
       "englishName": "Al-Ma'idah",
       "verses": [
         {
@@ -3983,7 +3984,7 @@ window.amQuranData = {
     },
     {
       "number": 6,
-      "name": "Al-An'am",
+      "name": "الأنعام",
       "englishName": "Al-An'am",
       "verses": [
         {
@@ -4815,7 +4816,7 @@ window.amQuranData = {
     },
     {
       "number": 7,
-      "name": "Al-A'raf",
+      "name": "الأعراف",
       "englishName": "Al-A'raf",
       "verses": [
         {
@@ -5852,7 +5853,7 @@ window.amQuranData = {
     },
     {
       "number": 8,
-      "name": "Al-Anfal",
+      "name": "الأنفال",
       "englishName": "Al-Anfal",
       "verses": [
         {
@@ -6234,7 +6235,7 @@ window.amQuranData = {
     },
     {
       "number": 9,
-      "name": "At-Tawbah",
+      "name": "التوبة",
       "englishName": "At-Tawbah",
       "verses": [
         {
@@ -6886,7 +6887,7 @@ window.amQuranData = {
     },
     {
       "number": 10,
-      "name": "Yunus",
+      "name": "يونس",
       "englishName": "Yunus",
       "verses": [
         {
@@ -7438,7 +7439,7 @@ window.amQuranData = {
     },
     {
       "number": 11,
-      "name": "Hud",
+      "name": "هود",
       "englishName": "Hud",
       "verses": [
         {
@@ -8060,7 +8061,7 @@ window.amQuranData = {
     },
     {
       "number": 12,
-      "name": "Yusuf",
+      "name": "يوسف",
       "englishName": "Yusuf",
       "verses": [
         {
@@ -8622,7 +8623,7 @@ window.amQuranData = {
     },
     {
       "number": 13,
-      "name": "Ar-Ra'd",
+      "name": "الرعد",
       "englishName": "Ar-Ra'd",
       "verses": [
         {
@@ -8844,7 +8845,7 @@ window.amQuranData = {
     },
     {
       "number": 14,
-      "name": "Ibrahim",
+      "name": "ابراهيم",
       "englishName": "Ibrahim",
       "verses": [
         {
@@ -9111,7 +9112,7 @@ window.amQuranData = {
     },
     {
       "number": 15,
-      "name": "Al-Hijr",
+      "name": "الحجر",
       "englishName": "Al-Hijr",
       "verses": [
         {
@@ -9613,7 +9614,7 @@ window.amQuranData = {
     },
     {
       "number": 16,
-      "name": "An-Nahl",
+      "name": "النحل",
       "englishName": "An-Nahl",
       "verses": [
         {
@@ -10260,7 +10261,7 @@ window.amQuranData = {
     },
     {
       "number": 17,
-      "name": "Al-Isra",
+      "name": "الإسراء",
       "englishName": "Al-Isra",
       "verses": [
         {
@@ -10822,7 +10823,7 @@ window.amQuranData = {
     },
     {
       "number": 18,
-      "name": "Al-Kahf",
+      "name": "الكهف",
       "englishName": "Al-Kahf",
       "verses": [
         {
@@ -11379,7 +11380,7 @@ window.amQuranData = {
     },
     {
       "number": 19,
-      "name": "Maryam",
+      "name": "مريم",
       "englishName": "Maryam",
       "verses": [
         {
@@ -11876,7 +11877,7 @@ window.amQuranData = {
     },
     {
       "number": 20,
-      "name": "Taha",
+      "name": "طه",
       "englishName": "Taha",
       "verses": [
         {
@@ -12558,7 +12559,7 @@ window.amQuranData = {
     },
     {
       "number": 21,
-      "name": "Al-Anbya",
+      "name": "الأنبياء",
       "englishName": "Al-Anbya",
       "verses": [
         {
@@ -13125,7 +13126,7 @@ window.amQuranData = {
     },
     {
       "number": 22,
-      "name": "Al-Hajj",
+      "name": "الحج",
       "englishName": "Al-Hajj",
       "verses": [
         {
@@ -13522,7 +13523,7 @@ window.amQuranData = {
     },
     {
       "number": 23,
-      "name": "Al-Mu'minun",
+      "name": "المؤمنون",
       "englishName": "Al-Mu'minun",
       "verses": [
         {
@@ -14119,7 +14120,7 @@ window.amQuranData = {
     },
     {
       "number": 24,
-      "name": "An-Nur",
+      "name": "النور",
       "englishName": "An-Nur",
       "verses": [
         {
@@ -14446,7 +14447,7 @@ window.amQuranData = {
     },
     {
       "number": 25,
-      "name": "Al-Furqan",
+      "name": "الفرقان",
       "englishName": "Al-Furqan",
       "verses": [
         {
@@ -14838,7 +14839,7 @@ window.amQuranData = {
     },
     {
       "number": 26,
-      "name": "Ash-Shu'ara",
+      "name": "الشعراء",
       "englishName": "Ash-Shu'ara",
       "verses": [
         {
@@ -15980,7 +15981,7 @@ window.amQuranData = {
     },
     {
       "number": 27,
-      "name": "An-Naml",
+      "name": "النمل",
       "englishName": "An-Naml",
       "verses": [
         {
@@ -16452,7 +16453,7 @@ window.amQuranData = {
     },
     {
       "number": 28,
-      "name": "Al-Qasas",
+      "name": "القصص",
       "englishName": "Al-Qasas",
       "verses": [
         {
@@ -16899,7 +16900,7 @@ window.amQuranData = {
     },
     {
       "number": 29,
-      "name": "Al-'Ankabut",
+      "name": "العنكبوت",
       "englishName": "Al-'Ankabut",
       "verses": [
         {
@@ -17251,7 +17252,7 @@ window.amQuranData = {
     },
     {
       "number": 30,
-      "name": "Ar-Rum",
+      "name": "الروم",
       "englishName": "Ar-Rum",
       "verses": [
         {
@@ -17558,7 +17559,7 @@ window.amQuranData = {
     },
     {
       "number": 31,
-      "name": "Luqman",
+      "name": "لقمان",
       "englishName": "Luqman",
       "verses": [
         {
@@ -17735,7 +17736,7 @@ window.amQuranData = {
     },
     {
       "number": 32,
-      "name": "As-Sajdah",
+      "name": "السجدة",
       "englishName": "As-Sajdah",
       "verses": [
         {
@@ -17892,7 +17893,7 @@ window.amQuranData = {
     },
     {
       "number": 33,
-      "name": "Al-Ahzab",
+      "name": "الأحزاب",
       "englishName": "Al-Ahzab",
       "verses": [
         {
@@ -18264,7 +18265,7 @@ window.amQuranData = {
     },
     {
       "number": 34,
-      "name": "Saba",
+      "name": "سبإ",
       "englishName": "Saba",
       "verses": [
         {
@@ -18541,7 +18542,7 @@ window.amQuranData = {
     },
     {
       "number": 35,
-      "name": "Fatir",
+      "name": "فاطر",
       "englishName": "Fatir",
       "verses": [
         {
@@ -18773,7 +18774,7 @@ window.amQuranData = {
     },
     {
       "number": 36,
-      "name": "Ya-Sin",
+      "name": "يس",
       "englishName": "Ya-Sin",
       "verses": [
         {
@@ -19195,7 +19196,7 @@ window.amQuranData = {
     },
     {
       "number": 37,
-      "name": "As-Saffat",
+      "name": "الصافات",
       "englishName": "As-Saffat",
       "verses": [
         {
@@ -20112,7 +20113,7 @@ window.amQuranData = {
     },
     {
       "number": 38,
-      "name": "Sad",
+      "name": "ص",
       "englishName": "Sad",
       "verses": [
         {
@@ -20559,7 +20560,7 @@ window.amQuranData = {
     },
     {
       "number": 39,
-      "name": "Az-Zumar",
+      "name": "الزمر",
       "englishName": "Az-Zumar",
       "verses": [
         {
@@ -20941,7 +20942,7 @@ window.amQuranData = {
     },
     {
       "number": 40,
-      "name": "Ghafir",
+      "name": "غافر",
       "englishName": "Ghafir",
       "verses": [
         {
@@ -21373,7 +21374,7 @@ window.amQuranData = {
     },
     {
       "number": 41,
-      "name": "Fussilat",
+      "name": "فصلت",
       "englishName": "Fussilat",
       "verses": [
         {
@@ -21650,7 +21651,7 @@ window.amQuranData = {
     },
     {
       "number": 42,
-      "name": "Ash-Shuraa",
+      "name": "الشورى",
       "englishName": "Ash-Shuraa",
       "verses": [
         {
@@ -21922,7 +21923,7 @@ window.amQuranData = {
     },
     {
       "number": 43,
-      "name": "Az-Zukhruf",
+      "name": "الزخرف",
       "englishName": "Az-Zukhruf",
       "verses": [
         {
@@ -22374,7 +22375,7 @@ window.amQuranData = {
     },
     {
       "number": 44,
-      "name": "Ad-Dukhan",
+      "name": "الدخان",
       "englishName": "Ad-Dukhan",
       "verses": [
         {
@@ -22676,7 +22677,7 @@ window.amQuranData = {
     },
     {
       "number": 45,
-      "name": "Al-Jathiyah",
+      "name": "الجاثية",
       "englishName": "Al-Jathiyah",
       "verses": [
         {
@@ -22868,7 +22869,7 @@ window.amQuranData = {
     },
     {
       "number": 46,
-      "name": "Al-Ahqaf",
+      "name": "الأحقاف",
       "englishName": "Al-Ahqaf",
       "verses": [
         {
@@ -23050,7 +23051,7 @@ window.amQuranData = {
     },
     {
       "number": 47,
-      "name": "Muhammad",
+      "name": "محمد",
       "englishName": "Muhammad",
       "verses": [
         {
@@ -23247,7 +23248,7 @@ window.amQuranData = {
     },
     {
       "number": 48,
-      "name": "Al-Fath",
+      "name": "الفتح",
       "englishName": "Al-Fath",
       "verses": [
         {
@@ -23399,7 +23400,7 @@ window.amQuranData = {
     },
     {
       "number": 49,
-      "name": "Al-Hujurat",
+      "name": "الحجرات",
       "englishName": "Al-Hujurat",
       "verses": [
         {
@@ -23496,7 +23497,7 @@ window.amQuranData = {
     },
     {
       "number": 50,
-      "name": "Qaf",
+      "name": "ق",
       "englishName": "Qaf",
       "verses": [
         {
@@ -23728,7 +23729,7 @@ window.amQuranData = {
     },
     {
       "number": 51,
-      "name": "Adh-Dhariyat",
+      "name": "الذاريات",
       "englishName": "Adh-Dhariyat",
       "verses": [
         {
@@ -24035,7 +24036,7 @@ window.amQuranData = {
     },
     {
       "number": 52,
-      "name": "At-Tur",
+      "name": "الطور",
       "englishName": "At-Tur",
       "verses": [
         {
@@ -24287,7 +24288,7 @@ window.amQuranData = {
     },
     {
       "number": 53,
-      "name": "An-Najm",
+      "name": "النجم",
       "englishName": "An-Najm",
       "verses": [
         {
@@ -24604,7 +24605,7 @@ window.amQuranData = {
     },
     {
       "number": 54,
-      "name": "Al-Qamar",
+      "name": "القمر",
       "englishName": "Al-Qamar",
       "verses": [
         {
@@ -24886,7 +24887,7 @@ window.amQuranData = {
     },
     {
       "number": 55,
-      "name": "Ar-Rahman",
+      "name": "الرحمن",
       "englishName": "Ar-Rahman",
       "verses": [
         {
@@ -25283,7 +25284,7 @@ window.amQuranData = {
     },
     {
       "number": 56,
-      "name": "Al-Waqi'ah",
+      "name": "الواقعة",
       "englishName": "Al-Waqi'ah",
       "verses": [
         {
@@ -25770,7 +25771,7 @@ window.amQuranData = {
     },
     {
       "number": 57,
-      "name": "Al-Hadid",
+      "name": "الحديد",
       "englishName": "Al-Hadid",
       "verses": [
         {
@@ -25922,7 +25923,7 @@ window.amQuranData = {
     },
     {
       "number": 58,
-      "name": "Al-Mujadila",
+      "name": "المجادلة",
       "englishName": "Al-Mujadila",
       "verses": [
         {
@@ -26039,7 +26040,7 @@ window.amQuranData = {
     },
     {
       "number": 59,
-      "name": "Al-Hashr",
+      "name": "الحشر",
       "englishName": "Al-Hashr",
       "verses": [
         {
@@ -26166,7 +26167,7 @@ window.amQuranData = {
     },
     {
       "number": 60,
-      "name": "Al-Mumtahanah",
+      "name": "الممتحنة",
       "englishName": "Al-Mumtahanah",
       "verses": [
         {
@@ -26238,7 +26239,7 @@ window.amQuranData = {
     },
     {
       "number": 61,
-      "name": "As-Saf",
+      "name": "الصف",
       "englishName": "As-Saf",
       "verses": [
         {
@@ -26315,7 +26316,7 @@ window.amQuranData = {
     },
     {
       "number": 62,
-      "name": "Al-Jumu'ah",
+      "name": "الجمعة",
       "englishName": "Al-Jumu'ah",
       "verses": [
         {
@@ -26377,7 +26378,7 @@ window.amQuranData = {
     },
     {
       "number": 63,
-      "name": "Al-Munafiqun",
+      "name": "المنافقون",
       "englishName": "Al-Munafiqun",
       "verses": [
         {
@@ -26439,7 +26440,7 @@ window.amQuranData = {
     },
     {
       "number": 64,
-      "name": "At-Taghabun",
+      "name": "التغابن",
       "englishName": "At-Taghabun",
       "verses": [
         {
@@ -26536,7 +26537,7 @@ window.amQuranData = {
     },
     {
       "number": 65,
-      "name": "At-Talaq",
+      "name": "الطلاق",
       "englishName": "At-Talaq",
       "verses": [
         {
@@ -26603,7 +26604,7 @@ window.amQuranData = {
     },
     {
       "number": 66,
-      "name": "At-Tahrim",
+      "name": "التحريم",
       "englishName": "At-Tahrim",
       "verses": [
         {
@@ -26670,7 +26671,7 @@ window.amQuranData = {
     },
     {
       "number": 67,
-      "name": "Al-Mulk",
+      "name": "الملك",
       "englishName": "Al-Mulk",
       "verses": [
         {
@@ -26827,7 +26828,7 @@ window.amQuranData = {
     },
     {
       "number": 68,
-      "name": "Al-Qalam",
+      "name": "القلم",
       "englishName": "Al-Qalam",
       "verses": [
         {
@@ -27094,7 +27095,7 @@ window.amQuranData = {
     },
     {
       "number": 69,
-      "name": "Al-Haqqah",
+      "name": "الحاقة",
       "englishName": "Al-Haqqah",
       "verses": [
         {
@@ -27361,7 +27362,7 @@ window.amQuranData = {
     },
     {
       "number": 70,
-      "name": "Al-Ma'arij",
+      "name": "المعارج",
       "englishName": "Al-Ma'arij",
       "verses": [
         {
@@ -27588,7 +27589,7 @@ window.amQuranData = {
     },
     {
       "number": 71,
-      "name": "Nuh",
+      "name": "نوح",
       "englishName": "Nuh",
       "verses": [
         {
@@ -27735,7 +27736,7 @@ window.amQuranData = {
     },
     {
       "number": 72,
-      "name": "Al-Jinn",
+      "name": "الجن",
       "englishName": "Al-Jinn",
       "verses": [
         {
@@ -27882,7 +27883,7 @@ window.amQuranData = {
     },
     {
       "number": 73,
-      "name": "Al-Muzzammil",
+      "name": "المزمل",
       "englishName": "Al-Muzzammil",
       "verses": [
         {
@@ -27989,7 +27990,7 @@ window.amQuranData = {
     },
     {
       "number": 74,
-      "name": "Al-Muddaththir",
+      "name": "المدثر",
       "englishName": "Al-Muddaththir",
       "verses": [
         {
@@ -28276,7 +28277,7 @@ window.amQuranData = {
     },
     {
       "number": 75,
-      "name": "Al-Qiyamah",
+      "name": "القيامة",
       "englishName": "Al-Qiyamah",
       "verses": [
         {
@@ -28483,7 +28484,7 @@ window.amQuranData = {
     },
     {
       "number": 76,
-      "name": "Al-Insan",
+      "name": "الانسان",
       "englishName": "Al-Insan",
       "verses": [
         {
@@ -28645,7 +28646,7 @@ window.amQuranData = {
     },
     {
       "number": 77,
-      "name": "Al-Mursalat",
+      "name": "المرسلات",
       "englishName": "Al-Mursalat",
       "verses": [
         {
@@ -28902,7 +28903,7 @@ window.amQuranData = {
     },
     {
       "number": 78,
-      "name": "An-Naba",
+      "name": "النبإ",
       "englishName": "An-Naba",
       "verses": [
         {
@@ -29109,7 +29110,7 @@ window.amQuranData = {
     },
     {
       "number": 79,
-      "name": "An-Nazi'at",
+      "name": "النازعات",
       "englishName": "An-Nazi'at",
       "verses": [
         {
@@ -29346,7 +29347,7 @@ window.amQuranData = {
     },
     {
       "number": 80,
-      "name": "'Abasa",
+      "name": "عبس",
       "englishName": "'Abasa",
       "verses": [
         {
@@ -29563,7 +29564,7 @@ window.amQuranData = {
     },
     {
       "number": 81,
-      "name": "At-Takwir",
+      "name": "التكوير",
       "englishName": "At-Takwir",
       "verses": [
         {
@@ -29715,7 +29716,7 @@ window.amQuranData = {
     },
     {
       "number": 82,
-      "name": "Al-Infitar",
+      "name": "الإنفطار",
       "englishName": "Al-Infitar",
       "verses": [
         {
@@ -29817,7 +29818,7 @@ window.amQuranData = {
     },
     {
       "number": 83,
-      "name": "Al-Mutaffifin",
+      "name": "المطففين",
       "englishName": "Al-Mutaffifin",
       "verses": [
         {
@@ -30004,7 +30005,7 @@ window.amQuranData = {
     },
     {
       "number": 84,
-      "name": "Al-Inshiqaq",
+      "name": "الإنشقاق",
       "englishName": "Al-Inshiqaq",
       "verses": [
         {
@@ -30136,7 +30137,7 @@ window.amQuranData = {
     },
     {
       "number": 85,
-      "name": "Al-Buruj",
+      "name": "البروج",
       "englishName": "Al-Buruj",
       "verses": [
         {
@@ -30253,7 +30254,7 @@ window.amQuranData = {
     },
     {
       "number": 86,
-      "name": "At-Tariq",
+      "name": "الطارق",
       "englishName": "At-Tariq",
       "verses": [
         {
@@ -30345,7 +30346,7 @@ window.amQuranData = {
     },
     {
       "number": 87,
-      "name": "Al-A'la",
+      "name": "الأعلى",
       "englishName": "Al-A'la",
       "verses": [
         {
@@ -30447,7 +30448,7 @@ window.amQuranData = {
     },
     {
       "number": 88,
-      "name": "Al-Ghashiyah",
+      "name": "الغاشية",
       "englishName": "Al-Ghashiyah",
       "verses": [
         {
@@ -30584,7 +30585,7 @@ window.amQuranData = {
     },
     {
       "number": 89,
-      "name": "Al-Fajr",
+      "name": "الفجر",
       "englishName": "Al-Fajr",
       "verses": [
         {
@@ -30741,7 +30742,7 @@ window.amQuranData = {
     },
     {
       "number": 90,
-      "name": "Al-Balad",
+      "name": "البلد",
       "englishName": "Al-Balad",
       "verses": [
         {
@@ -30848,7 +30849,7 @@ window.amQuranData = {
     },
     {
       "number": 91,
-      "name": "Ash-Shams",
+      "name": "الشمس",
       "englishName": "Ash-Shams",
       "verses": [
         {
@@ -30930,7 +30931,7 @@ window.amQuranData = {
     },
     {
       "number": 92,
-      "name": "Al-Layl",
+      "name": "الليل",
       "englishName": "Al-Layl",
       "verses": [
         {
@@ -31042,7 +31043,7 @@ window.amQuranData = {
     },
     {
       "number": 93,
-      "name": "Ad-Duhaa",
+      "name": "الضحى",
       "englishName": "Ad-Duhaa",
       "verses": [
         {
@@ -31104,7 +31105,7 @@ window.amQuranData = {
     },
     {
       "number": 94,
-      "name": "Ash-Sharh",
+      "name": "الشرح",
       "englishName": "Ash-Sharh",
       "verses": [
         {
@@ -31151,7 +31152,7 @@ window.amQuranData = {
     },
     {
       "number": 95,
-      "name": "At-Tin",
+      "name": "التين",
       "englishName": "At-Tin",
       "verses": [
         {
@@ -31198,7 +31199,7 @@ window.amQuranData = {
     },
     {
       "number": 96,
-      "name": "Al-'Alaq",
+      "name": "العلق",
       "englishName": "Al-'Alaq",
       "verses": [
         {
@@ -31300,7 +31301,7 @@ window.amQuranData = {
     },
     {
       "number": 97,
-      "name": "Al-Qadr",
+      "name": "القدر",
       "englishName": "Al-Qadr",
       "verses": [
         {
@@ -31332,7 +31333,7 @@ window.amQuranData = {
     },
     {
       "number": 98,
-      "name": "Al-Bayyinah",
+      "name": "البينة",
       "englishName": "Al-Bayyinah",
       "verses": [
         {
@@ -31379,7 +31380,7 @@ window.amQuranData = {
     },
     {
       "number": 99,
-      "name": "Az-Zalzalah",
+      "name": "الزلزلة",
       "englishName": "Az-Zalzalah",
       "verses": [
         {
@@ -31426,7 +31427,7 @@ window.amQuranData = {
     },
     {
       "number": 100,
-      "name": "Al-'Adiyat",
+      "name": "العاديات",
       "englishName": "Al-'Adiyat",
       "verses": [
         {
@@ -31488,7 +31489,7 @@ window.amQuranData = {
     },
     {
       "number": 101,
-      "name": "Al-Qari'ah",
+      "name": "القارعة",
       "englishName": "Al-Qari'ah",
       "verses": [
         {
@@ -31550,7 +31551,7 @@ window.amQuranData = {
     },
     {
       "number": 102,
-      "name": "At-Takathur",
+      "name": "التكاثر",
       "englishName": "At-Takathur",
       "verses": [
         {
@@ -31597,7 +31598,7 @@ window.amQuranData = {
     },
     {
       "number": 103,
-      "name": "Al-'Asr",
+      "name": "العصر",
       "englishName": "Al-'Asr",
       "verses": [
         {
@@ -31619,7 +31620,7 @@ window.amQuranData = {
     },
     {
       "number": 104,
-      "name": "Al-Humazah",
+      "name": "الهمزة",
       "englishName": "Al-Humazah",
       "verses": [
         {
@@ -31671,7 +31672,7 @@ window.amQuranData = {
     },
     {
       "number": 105,
-      "name": "Al-Fil",
+      "name": "الفيل",
       "englishName": "Al-Fil",
       "verses": [
         {
@@ -31703,7 +31704,7 @@ window.amQuranData = {
     },
     {
       "number": 106,
-      "name": "Quraysh",
+      "name": "قريش",
       "englishName": "Quraysh",
       "verses": [
         {
@@ -31730,7 +31731,7 @@ window.amQuranData = {
     },
     {
       "number": 107,
-      "name": "Al-Ma'un",
+      "name": "الماعون",
       "englishName": "Al-Ma'un",
       "verses": [
         {
@@ -31772,7 +31773,7 @@ window.amQuranData = {
     },
     {
       "number": 108,
-      "name": "Al-Kawthar",
+      "name": "الكوثر",
       "englishName": "Al-Kawthar",
       "verses": [
         {
@@ -31794,7 +31795,7 @@ window.amQuranData = {
     },
     {
       "number": 109,
-      "name": "Al-Kafirun",
+      "name": "الكافرون",
       "englishName": "Al-Kafirun",
       "verses": [
         {
@@ -31831,7 +31832,7 @@ window.amQuranData = {
     },
     {
       "number": 110,
-      "name": "An-Nasr",
+      "name": "النصر",
       "englishName": "An-Nasr",
       "verses": [
         {
@@ -31853,7 +31854,7 @@ window.amQuranData = {
     },
     {
       "number": 111,
-      "name": "Al-Masad",
+      "name": "المسد",
       "englishName": "Al-Masad",
       "verses": [
         {
@@ -31885,7 +31886,7 @@ window.amQuranData = {
     },
     {
       "number": 112,
-      "name": "Al-Ikhlas",
+      "name": "الإخلاص",
       "englishName": "Al-Ikhlas",
       "verses": [
         {
@@ -31912,7 +31913,7 @@ window.amQuranData = {
     },
     {
       "number": 113,
-      "name": "Al-Falaq",
+      "name": "الفلق",
       "englishName": "Al-Falaq",
       "verses": [
         {
@@ -31944,7 +31945,7 @@ window.amQuranData = {
     },
     {
       "number": 114,
-      "name": "An-Nas",
+      "name": "الناس",
       "englishName": "An-Nas",
       "verses": [
         {
